@@ -20,4 +20,7 @@ for %%i in (%PATH%/*) do (
 
 if not defined FOUND echo Nothing found.
 
+:: pewnie za bardzo komplikuje bo mzna tez tak
+:: dir %1\*%2 /B
+
 :end
