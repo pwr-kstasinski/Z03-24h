@@ -6,7 +6,7 @@ if "%1"=="" (
     goto :end
 )
 
-set EXT=%1
+set EXT=.%1
 set PATH="."
 
 if not "%2"=="" set PATH=%2
@@ -21,6 +21,6 @@ for %%i in (%PATH%/*) do (
 if not defined FOUND echo Nothing found.
 
 :: pewnie za bardzo komplikuje bo mzna tez tak
-:: dir %1\*%2 /B
+:: dir %1\*%2
 
 :end
