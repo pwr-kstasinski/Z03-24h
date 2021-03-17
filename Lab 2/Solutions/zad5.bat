@@ -5,6 +5,6 @@ if "%1" == "" (
     goto :end
 )
 
-ffmpeg -i %1 -ss 00:00:00 -vframes 1 out.png
+ffmpeg -i %1 -ss 00:00:01 -vframes 1 out.png
 
 :end
