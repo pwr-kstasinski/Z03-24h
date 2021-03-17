@@ -2,7 +2,7 @@ import os, sys
 
 arg_count = len(sys.argv)
 
-if arg_count <= 1 or arg_count > 3 :
+if arg_count <= 1 or arg_count > 2 :
     print ("""Niepoprawna ilość argumentów. Przykładowa składnia
     >>py Zad1.py <extension> <path>(optional)""")
     exit(-1)
