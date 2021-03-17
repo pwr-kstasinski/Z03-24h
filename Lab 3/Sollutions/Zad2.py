@@ -7,7 +7,12 @@ space = "     "
 innerSymbol = chr(0x2523)
 lastSymbol = chr(0x2517)
 
+# ścierzka początkowa
 root = sys.argv[1] if len(sys.argv) == 2 else "./"
+
+if not os.path.isdir(root):
+    print("Podana ścierzka jest niepoprawna")
+    exit(-1)
 
 
 def listFoldersRec(rootDir, printPrefix=""):
