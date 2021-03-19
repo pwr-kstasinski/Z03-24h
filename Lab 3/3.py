@@ -1,0 +1,5 @@
+separator=input("Podaj czym wpisywane liczby beda oddzielone: ")
+list=input("Wpisz liczby: ")
+list=list.split(separator)
+list.sort()
+print(list)
