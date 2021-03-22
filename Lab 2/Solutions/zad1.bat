@@ -5,4 +5,3 @@ echo Podaj rozszerzenie
 set /p extension=
 cd %path%
 dir *.%extension% /b 
-pause 
