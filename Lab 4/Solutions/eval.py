@@ -19,9 +19,11 @@ Za operator pwszyjmuje się każdy znak nie będący składową liczb
 """
 
 
-def tokenize_meth_expr(expr: str) -> list[str]:
+def tokenize_math_expr(expr: str) -> list[str]:
     # elementy konstrułujące liczby
     num_fragments = "0123456789."
+    # operatory
+    operators = "+-*/()"
     # tablica wynikowa
     tokenized = []
     # tymczasowe miejsce na liczbę
@@ -40,6 +42,8 @@ def tokenize_meth_expr(expr: str) -> list[str]:
                 tokenized.append(number)
                 number = ""
             if not token.isspace():
+                if not token in operators:
+                    raise Exception("Nieoczekiwany operator: " + token)
                 tokenized.append(token)
 
     # ostatnia liczba
@@ -49,7 +53,7 @@ def tokenize_meth_expr(expr: str) -> list[str]:
     return tokenized
 
 
-def to_binary_expr_tree(expr: str):
+def to_binary_expr_tree(tokenized_expr: str):
 
     # pryjorytety operacji
     priority = {
@@ -64,6 +68,8 @@ def to_binary_expr_tree(expr: str):
     val_stack = []
 
     def merge_operation_node():
+        if len(val_stack) < 2:
+            raise Exception("Niepoprawna składnia formuły!")
         right = val_stack.pop()
         left = val_stack.pop()
         val_stack.append({
@@ -72,7 +78,7 @@ def to_binary_expr_tree(expr: str):
             "value": opr_stack.pop()
         })
 
-    for token in tokenize_meth_expr(expr):
+    for token in tokenized_expr:
         # jeśli token jest licznbą
         if is_number(token):
             val_stack.append({"value": token})
@@ -109,6 +115,8 @@ def evaluate_expr_tree(expr_tree):
         return l_val * r_val
     elif operator == "/":
         return l_val / r_val
+    else:
+        raise Exception("Nieoczekiwany operator: " + operator)
 
 
 def make_graph(root):
@@ -140,12 +148,17 @@ def generate_graph(root, graph, node_id):
 
 if __name__ == "__main__":
     inp = input("Podaj wyrarzenie: ")
-    print(inp)
-    tokenized_expr = tokenize_meth_expr(inp)
-    print("tokenized: " + str(tokenized_expr))
-    bt_expr = to_binary_expr_tree(tokenized_expr)
-    print("Tree representation: " + str(bt_expr))
-    print("value: " + str(evaluate_expr_tree(bt_expr)))
-    graph = make_graph(bt_expr)
-    graph.write_png("output.png")
-    webbrowser.open("output.png")
+    print("podałeś: " + str(inp))
+    try:
+        tokenized_expr = tokenize_math_expr(inp)
+        print("tokenized: " + str(tokenized_expr))
+
+        bt_expr = to_binary_expr_tree(tokenized_expr)
+        print("Tree representation: " + str(bt_expr))
+        print("value: " + str(evaluate_expr_tree(bt_expr)))
+
+        graph = make_graph(bt_expr)
+        graph.write_png("output.png")
+        webbrowser.open("output.png")
+    except Exception as err:
+        print("Błąd: " + str(err))
