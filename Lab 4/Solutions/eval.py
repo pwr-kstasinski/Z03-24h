@@ -1,4 +1,7 @@
 import sys
+# https://github.com/pydot/pydot
+import pydot
+import webbrowser
 
 
 def is_number(s):
@@ -40,7 +43,7 @@ def tokenize_meth_expr(expr: str) -> list[str]:
                 tokenized.append(token)
 
     # ostatnia liczba
-    if number != 0:
+    if number != "":
         tokenized.append(number)
 
     return tokenized
@@ -60,6 +63,15 @@ def to_binary_expr_tree(expr: str):
 
     val_stack = []
 
+    def merge_operation_node():
+        right = val_stack.pop()
+        left = val_stack.pop()
+        val_stack.append({
+            "left": left,
+            "right": right,
+            "value": opr_stack.pop()
+        })
+
     for token in tokenize_meth_expr(expr):
         # jeśli token jest licznbą
         if is_number(token):
@@ -68,28 +80,15 @@ def to_binary_expr_tree(expr: str):
             opr_stack.append(token)
         elif token == ")":
             while opr_stack[-1] != '(':
-                val_stack.append(opr_stack.pop())
+                merge_operation_node()
             opr_stack.pop()
         else:
             while len(opr_stack) > 0 and priority[opr_stack[-1]] >= priority[token]:
-                # onp.append(opr_stack.pop())
-                left = val_stack.pop()
-                right = val_stack.pop()
-                val_stack.append({
-                    "left": left,
-                    "right": right,
-                    "value": opr_stack.pop()
-                })
+                merge_operation_node()
             opr_stack.append(token)
 
     while len(opr_stack) > 0:
-        left = val_stack.pop()
-        right = val_stack.pop()
-        val_stack.append({
-            "left": left,
-            "right": right,
-            "value": opr_stack.pop()
-        })
+        merge_operation_node()
 
     return val_stack[0]
 
@@ -112,11 +111,41 @@ def evaluate_expr_tree(expr_tree):
         return l_val / r_val
 
 
+def make_graph(root):
+    # obejście przekazwywanie przez wartość
+    node_id = [0]
+    graph = pydot.Dot('my_graph', graph_type='graph', bgcolor='white')
+    generate_graph(root, graph, node_id)
+    return graph
+
+
+def generate_graph(root, graph, node_id):
+    node = pydot.Node(str(node_id[0]), label=str(root["value"]), color='black')
+    root_node_id = node_id[0]
+    node_id[0] += 1
+    graph.add_node(node)
+
+    if 'left' in root:
+        left_node_id = generate_graph(root['left'], graph, node_id)
+        graph.add_edge(pydot.Edge(str(root_node_id),
+                       str(left_node_id), color='black'))
+
+    if 'right' in root:
+        right_node_id = generate_graph(root['right'], graph, node_id)
+        graph.add_edge(pydot.Edge(str(root_node_id),
+                       str(right_node_id), color='blue'))
+
+    return root_node_id
+
+
 if __name__ == "__main__":
     inp = input("Podaj wyrarzenie: ")
     print(inp)
     tokenized_expr = tokenize_meth_expr(inp)
-    print("tokenized" + str(tokenized_expr))
+    print("tokenized: " + str(tokenized_expr))
     bt_expr = to_binary_expr_tree(tokenized_expr)
     print("Tree representation: " + str(bt_expr))
     print("value: " + str(evaluate_expr_tree(bt_expr)))
+    graph = make_graph(bt_expr)
+    graph.write_png("output.png")
+    webbrowser.open("output.png")
