@@ -1,8 +1,9 @@
+import Calculator from "./components/Calculator";
 
 function App() {
   return (
     <div className="App">
-    	Test
+      <Calculator />
     </div>
   );
 }
