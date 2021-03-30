@@ -1,13 +1,22 @@
+var f = [];
+function factorial(n) {
+    if (n == 0 || n == 1)
+        return 1;
+    if (f[n] > 0)
+        return f[n];
+    return f[n] = factorial(n - 1) * n;
+}
 
 function Calc() {
     const opr_priotity = Object.freeze({
-        '*': 3, '/': 3,
+        '^': 4, 'sqrt': 4, 'abs': 4, 'log': 4, 'rev':4,
+        '*': 3, '/': 3, '%': 3,
         '-': 2, '+': 2,
         '(': 1, ')': 1
     })
 
-    const operations = ['+', '-', '/', '*', '(', ')']
-
+    const operations = ['+', '-', '/', '*', '(', ')', '^', '%', '!', 'abs', 'log', 'sqrt', 'rev', 'log']
+    const oneArgOperators = ['!', 'abs', 'log', 'sqrt','rev','log']
     const opr_stack = []
     const val_stack = []
     let str_repr = []
@@ -16,15 +25,25 @@ function Calc() {
     const getStrRepr = () => str_repr.join("")
 
     const mergeOperationNode = () => {
-        if (val_stack.length < 2)
-            throw Error("Niepoprawna składnia formuły!")
-        const right = val_stack.pop()
-        const left = val_stack.pop()
-        val_stack.push({
-            "left": left,
-            "right": right,
-            "value": opr_stack.pop()
-        })
+        if (oneArgOperators.indexOf(opr_stack[opr_stack.length - 1]) >= 0) {
+            const left = val_stack.pop()
+            val_stack.push({
+                "left": left,
+                "value": opr_stack.pop()
+            })
+        }
+        else {
+            if (val_stack.length < 2)
+                throw Error("Niepoprawna składnia formuły!")
+            const right = val_stack.pop()
+            const left = val_stack.pop()
+            val_stack.push({
+                "left": left,
+                "right": right,
+                "value": opr_stack.pop()
+            })
+        }
+
     }
 
     const addNumber = number => {
@@ -62,27 +81,56 @@ function Calc() {
         console.log("opr: ", opr_stack);
     }
 
-    const evaluate_tree = (expr_tree) => {
-        if (!(expr_tree["left"] && expr_tree["right"]))
-            return expr_tree["value"]
+    const evaluate_tree = (root) => {
+        // case root is leaf
+        if (!root["left"] && !root["right"])
+            return root["value"]
+        // case 2 arg operations
+        else if (root["left"] && root["right"]) {
+            const l_val = evaluate_tree(root["left"])
+            const r_val = evaluate_tree(root["right"])
 
-        const l_val = evaluate_tree(expr_tree["left"])
-        const r_val = evaluate_tree(expr_tree["right"])
+            const operator = root["value"]
 
-        const operator = expr_tree["value"]
-
-        switch (operator) {
-            case "+":
-                return l_val + r_val
-            case "-":
-                return l_val - r_val
-            case "*":
-                return l_val * r_val
-            case "/":
-                return l_val / r_val
-            default:
-                throw Error("Nieoczekiwany operator: " + operator)
+            switch (operator) {
+                case "+":
+                    return l_val + r_val
+                case "-":
+                    return l_val - r_val
+                case "*":
+                    return l_val * r_val
+                case "/":
+                    return l_val / r_val
+                case "^":
+                    return Math.pow(l_val, r_val)
+                case "%":
+                    return l_val % r_val
+                default:
+                    throw Error("Nieoczekiwany operator: " + operator)
+            }
         }
+        // case 1 arg operations
+        else {
+            const val = evaluate_tree(root["left"] ? root["left"] : root["right"])
+
+            const operator = root["value"]
+            console.log("fdsafasdfdsaf");
+            switch (operator) {
+                case "!":
+                    return factorial(val)
+                case "abs":
+                    return Math.abs(val)
+                case "sqrt":
+                    return Math.sqrt(val)
+                case "log":
+                    return Math.log10(val)
+                case "rev":
+                    return 1/val
+                default:
+                    throw Error("Nieoczekiwany operator: " + operator)
+            }
+        }
+
     }
 
     const clear = () => {

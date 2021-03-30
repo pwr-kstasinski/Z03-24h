@@ -20,6 +20,13 @@ function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onClr
             <button className="keyboard__key" onClick={() => onFunctionClick("/")}>/</button>
             <button className="keyboard__key" onClick={() => onFunctionClick("(")}>(</button>
             <button className="keyboard__key" onClick={() => onFunctionClick(")")}>)</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("^")}>^</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("%")}>%</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("!")}>!</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("abs")}>abs</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("sqrt")}>sqrt</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("log")}>log10</button>
+            <button className="keyboard__key" onClick={() => onFunctionClick("rev")}>rev</button>
             <button className="keyboard__key" onClick={onEqual}>=</button>
 
 

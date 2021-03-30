@@ -3,7 +3,8 @@ import Display from './Display'
 import Keyboard from './Keyboard'
 import Calc from "../Helpers/Calc"
 
-const infixOperations = ["+", "-", "/", "*"]
+const infixOperations = ["+", "-", "/", "*", "^", "%"]
+const oneArgOperations = ["!", "log", 'sqrt', 'abs', 'rev', 'log']
 
 function Calculator(params) {
     const [dispFormula, setDispFormula] = useState("")
@@ -42,10 +43,15 @@ function Calculator(params) {
         // if infix operation used
         if (infixOperations.indexOf(opr) >= 0) {
             if (calc.getLastTyped() !== ")") {
-                calc.addNumber(num)
+                if (oneArgOperations.indexOf(calc.getLastTyped()) < 0) {
+                    calc.addNumber(num)
+                    setDispFormula(prev => prev + num.toString() + opr.toString())
+                }
+                else {
+                    setDispFormula(prev => prev + opr.toString())
+                }
                 calc.addOperation(opr)
                 setFuncUsed(true)
-                setDispFormula(prev => prev + num.toString() + opr.toString())
                 setCurrDisp("0")
                 setDotUsed(false)
             }
@@ -56,6 +62,20 @@ function Calculator(params) {
                 setDotUsed(false)
             }
         }
+        else if (oneArgOperations.indexOf(opr) >= 0) {
+            console.log("LAST TYPED: " + calc.getLastTyped());
+            if (infixOperations.indexOf(calc.getLastTyped()) >= 0) {
+                calc.addNumber(num)
+                setDispFormula(prev => prev + num.toString() + opr.toString())
+            }
+            else {
+                setDispFormula(prev => prev + opr.toString())
+            }
+            calc.addOperation(opr)
+            setFuncUsed(true)
+            setCurrDisp("0")
+            setDotUsed(false)
+        }
         else {
             if (opr == "(" && typeof calc.getLastTyped() !== 'number') {
                 setOpnBrckets(prev => prev + 1)
@@ -63,10 +83,15 @@ function Calculator(params) {
                 calc.addOperation(opr)
             }
             else if (opr == ")" && opnBrckets > clsBrckets) {
+                if (oneArgOperations.indexOf(calc.getLastTyped()) < 0) {
+                    calc.addNumber(num)
+                    setDispFormula(prev => prev + num.toString() + opr.toString())
+                }
+                else {
+                    setDispFormula(prev => prev + opr.toString())
+                }
                 setClsBrckets(prev => prev + 1)
-                calc.addNumber(num)
                 calc.addOperation(opr)
-                setDispFormula(prev => prev + num.toString() + opr.toString())
                 setCurrDisp("0")
                 setDotUsed(false)
             }
