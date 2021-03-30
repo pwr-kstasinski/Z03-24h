@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Display from './Display'
 import Keyboard from './Keyboard'
 import Calc from "../Helpers/Calc"
+import "./Calculator.css"
 
 const infixOperations = ["+", "-", "/", "*", "^", "%"]
 const oneArgOperations = ["!", "log", 'sqrt', 'abs', 'rev', 'log']

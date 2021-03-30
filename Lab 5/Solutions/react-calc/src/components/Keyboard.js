@@ -1,8 +1,9 @@
 import React from 'react';
+import "./Keyboard.css"
 
 function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onClrear = () => { }, onEqual = () => { } }) {
     return (
-        <div className="keyboard">
+        <table className="keyboard">
             <button className="keyboard__key" onClick={() => onNuberClick("1")}>1</button>
             <button className="keyboard__key" onClick={() => onNuberClick("2")}>2</button>
             <button className="keyboard__key" onClick={() => onNuberClick("3")}>3</button>
@@ -30,7 +31,7 @@ function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onClr
             <button className="keyboard__key" onClick={onEqual}>=</button>
 
 
-        </div>
+        </table>
     )
 }
 
