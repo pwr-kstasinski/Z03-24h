@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import Display from './Display'
 import Keyboard from './Keyboard'
-import Calc from "../Helpers/Calc"
+import Calc, { isOneArgOperation, isTwoArgOperation } from "../Helpers/Calc"
 import "./Calculator.css"
 
-const infixOperations = ["+", "-", "/", "*", "^", "%"]
-const oneArgOperations = ["!", "log", 'sqrt', 'abs', 'rev', 'log']
 
 function Calculator(params) {
     const [dispFormula, setDispFormula] = useState("")
@@ -40,34 +38,29 @@ function Calculator(params) {
     }
 
     const handleFuncClick = opr => {
-        const num = parseFloat(currDisp)
-        // if infix operation used
-        if (infixOperations.indexOf(opr) >= 0) {
-            if (calc.getLastTyped() !== ")") {
-                if (oneArgOperations.indexOf(calc.getLastTyped()) < 0) {
-                    calc.addNumber(num)
-                    setDispFormula(prev => prev + num.toString() + opr.toString())
-                }
-                else {
-                    setDispFormula(prev => prev + opr.toString())
-                }
-                calc.addOperation(opr)
-                setFuncUsed(true)
-                setCurrDisp("0")
-                setDotUsed(false)
+        // wartość z wyświetlacza
+        const disp_num = parseFloat(currDisp)
+        // jeśli urzyto operacji infiksowe, biąroącej dwa argumenty
+        if (isTwoArgOperation(opr)) {
+            // jeśli bedzie za mało argumentów to dodaj argument z wyświetlacza
+            if (calc.valuesLeftAfterEvaluation() < 1) {
+                calc.addNumber(disp_num)
+                setDispFormula(prev => prev + disp_num.toString() + opr.toString())
             }
-            else {
-                calc.addOperation(opr)
-                setFuncUsed(true)
+            else
                 setDispFormula(prev => prev + opr.toString())
-                setDotUsed(false)
-            }
+
+            calc.addOperation(opr)
+            setFuncUsed(true)
+            setCurrDisp("0")
+            setDotUsed(false)
         }
-        else if (oneArgOperations.indexOf(opr) >= 0) {
-            console.log("LAST TYPED: " + calc.getLastTyped());
-            if (infixOperations.indexOf(calc.getLastTyped()) >= 0) {
-                calc.addNumber(num)
-                setDispFormula(prev => prev + num.toString() + opr.toString())
+        // jeśli jest to operacja jednoargumentowa
+        else if (isOneArgOperation(opr)) {
+            // wczytaj liczbę z wyświetlacza aby zachować spójność formóły
+            if (calc.valuesLeftAfterEvaluation() < 1) {
+                calc.addNumber(disp_num)
+                setDispFormula(prev => prev + disp_num.toString() + opr.toString())
             }
             else {
                 setDispFormula(prev => prev + opr.toString())
@@ -77,16 +70,18 @@ function Calculator(params) {
             setCurrDisp("0")
             setDotUsed(false)
         }
-        else {
-            if (opr == "(" && typeof calc.getLastTyped() !== 'number') {
-                setOpnBrckets(prev => prev + 1)
-                setDispFormula(prev => prev + opr.toString())
-                calc.addOperation(opr)
-            }
-            else if (opr == ")" && opnBrckets > clsBrckets) {
-                if (oneArgOperations.indexOf(calc.getLastTyped()) < 0) {
-                    calc.addNumber(num)
-                    setDispFormula(prev => prev + num.toString() + opr.toString())
+        else if (opr === "(") {
+            setOpnBrckets(prev => prev + 1)
+            setDispFormula(prev => prev + opr.toString())
+            calc.addOperation(opr)
+        }
+        else if (opr == ")") {
+            if (opnBrckets > clsBrckets) {
+                // jeśli ostatnio urzyto operacji dwuargumantowej
+                // wczytaj liczbę z wyświetlacza aby zachować spójnoiść
+                if (isTwoArgOperation(calc.getLastTyped())) {
+                    calc.addNumber(disp_num)
+                    setDispFormula(prev => prev + disp_num.toString() + opr.toString())
                 }
                 else {
                     setDispFormula(prev => prev + opr.toString())
@@ -101,10 +96,10 @@ function Calculator(params) {
 
     // only for debug
     const handleEqualClick = () => {
-        if (infixOperations.indexOf(calc.getLastTyped()) >= 0)
+        if (isTwoArgOperation(calc.getLastTyped()))
             calc.addNumber(parseFloat(currDisp))
         try {
-            const outcome = calc.evaluate()
+            const outcome = calc.evaluate().outcome
             console.log(outcome)
             setDispFormula("")
             setCurrDisp(outcome.toString())
