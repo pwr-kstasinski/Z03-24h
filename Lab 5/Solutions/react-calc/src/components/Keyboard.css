@@ -1,5 +1,48 @@
 .keyboard{
+    height: 400px;
     display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: repeat(5, 1fr);
     grid-template-rows: auto;
+}
+
+.keyboard__num-section{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    grid-row-start: 3;
+    grid-row-end: 6;
+    grid-column-start: 1;
+    grid-column-end: 4;
+}
+
+.keyboard__key{
+    font-size:  30px;
+    font-weight: bold;
+}
+
+.keyboard__key-func{
+    background-color: orange;
+}
+
+.keyboard__key-zero{
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+.keyboard__key-equ{
+    grid-column-start: 4;
+    grid-column-end: 6;
+    background-color: aqua;
+}
+
+.keyboard__key-clr{
+    background-color: red;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 2;
+}
+
+.keyboard__key-num{
+
 }
