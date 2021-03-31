@@ -1,7 +1,7 @@
 import React from 'react';
 import "./Keyboard.css"
 
-function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onClrear = () => { }, onEqual = () => { } }) {
+function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onEqual = () => { }, onClear = () => { }, clearAll = false }) {
     return (
         <table className="keyboard">
             <button className="keyboard__key" onClick={() => onNuberClick("1")}>1</button>
@@ -28,6 +28,7 @@ function Keyboard({ onNuberClick = () => { }, onFunctionClick = () => { }, onClr
             <button className="keyboard__key" onClick={() => onFunctionClick("sqrt")}>sqrt</button>
             <button className="keyboard__key" onClick={() => onFunctionClick("log")}>log10</button>
             <button className="keyboard__key" onClick={() => onFunctionClick("rev")}>rev</button>
+            <button className="keyboard__key" onClick={onClear}>{clearAll ? "C" : "CE"}</button>
             <button className="keyboard__key" onClick={onEqual}>=</button>
 
 

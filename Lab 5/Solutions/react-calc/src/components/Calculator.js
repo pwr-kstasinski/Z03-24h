@@ -11,7 +11,6 @@ function Calculator(params) {
     const [calc] = useState(Calc())
     // mówi czy w tej liczbie kropka była już użyta
     const [dotUsed, setDotUsed] = useState(false)
-    const [funcUsed, setFuncUsed] = useState(false)
     const [clsBrckets, setClsBrckets] = useState(0)
     const [opnBrckets, setOpnBrckets] = useState(0)
 
@@ -51,7 +50,6 @@ function Calculator(params) {
                 setDispFormula(prev => prev + opr.toString())
 
             calc.addOperation(opr)
-            setFuncUsed(true)
             setCurrDisp("0")
             setDotUsed(false)
         }
@@ -66,7 +64,6 @@ function Calculator(params) {
                 setDispFormula(prev => prev + opr.toString())
             }
             calc.addOperation(opr)
-            setFuncUsed(true)
             setCurrDisp("0")
             setDotUsed(false)
         }
@@ -77,9 +74,8 @@ function Calculator(params) {
         }
         else if (opr == ")") {
             if (opnBrckets > clsBrckets) {
-                // jeśli ostatnio urzyto operacji dwuargumantowej
                 // wczytaj liczbę z wyświetlacza aby zachować spójnoiść
-                if (isTwoArgOperation(calc.getLastTyped())) {
+                if (isTwoArgOperation(calc.getLastTyped()) || calc.getLastTyped() == "(") {
                     calc.addNumber(disp_num)
                     setDispFormula(prev => prev + disp_num.toString() + opr.toString())
                 }
@@ -91,6 +87,20 @@ function Calculator(params) {
                 setCurrDisp("0")
                 setDotUsed(false)
             }
+        }
+    }
+
+    const handleClear = () => {
+        if (currDisp == "0") {
+            calc.clear()
+            setDispFormula("")
+            setDotUsed(false)
+            setClsBrckets(0)
+            setOpnBrckets(0)
+        }
+        else {
+            setCurrDisp("0")
+            setDotUsed(false)
         }
     }
 
@@ -112,7 +122,7 @@ function Calculator(params) {
     return (
         <div className="calculator">
             <Display smallDisp={dispFormula} mianDisp={currDisp} />
-            <Keyboard onFunctionClick={handleFuncClick} onNuberClick={handleNumberClick} onEqual={handleEqualClick} />
+            <Keyboard onFunctionClick={handleFuncClick} onNuberClick={handleNumberClick} onEqual={handleEqualClick} onClear={handleClear} clearAll={currDisp == "0"} />
         </div>
     )
 }
