@@ -3,85 +3,112 @@ import sys
 from graphviz import Digraph
 
 class Tree:
-    def __init__(self):
-        self.id = None
-        self.left = None
-        self.right = None
-        self.data = None
+    def __init__(self, value, left = None, right = None):
+        self.value = value
+        self.left = left
+        self.right = right
 
 def make_tree(exp):
-    root = Tree()
-    if (queue == ""):
-        exit(-1)
-    counter = 0
-    root.data = queue[0]
-    root.id = str(counter)
-    dot.node(root.id,root.data)
-    position = exp.index(root.data)
-    organise_tree(exp[0 : position], root, 0, position, 0, counter)
-    organise_tree(exp[position + 1 :], root, position + 1, len(exp), 1, counter)
+    if (len(exp) == 1):
+        return Tree(exp)
+    leftE, rightE = exp.split(" ", 1)
+    if (leftE == '('):
+        inside, rightE = bracketSplit(rightE)
+        leftN = make_tree(inside)
+    else:
+        leftN = Tree(leftE)
+    
+    if (rightE == ""):
+        return leftN
+
+    root = Tree(rightE[0], leftN)
+    exp = rightE.split(" ", 1)[1]
+    if (len(exp) == 1):
+        leftE = exp
+    else:
+        leftE, rightE = exp.split(" ", 1)
+    if (leftE == '('):
+        inside, rightE = bracketSplit(rightE)
+        rightN = make_tree(inside)
+    else:
+        rightN = Tree(leftE)
+        if (exp != leftE):
+            exp = rightE
+    root.right = rightN
+
+    while (exp != exp.split(" ", 1)[0]):
+        leftE, exp = exp.split(" ", 1)
+        if (exp[0] == '('):
+            inside, exp = bracketSplit(exp[1:])
+            rightN = make_tree(inside[1:])
+        else:
+            rightN = Tree(exp[0])
+            if(exp[0] != exp):
+                exp = exp.split(" ", 1)[1]
+        if (leftE == '+' or leftE == "-"):
+            root = Tree(leftE, root, rightN)
+        else:
+            root.right = Tree(leftE, root.right, rightN)
+
     return root
 
-def organise_tree(exp, root, index_l, index_r, side, index):
-    queue = ""
-    node = Tree()
-    index += 1
-    if (side == 0):
-        root.left = node
-        node.id = "l" + str(index)
-    else:
-        root.right = node
-        node.id = "r" + str(index)
+def bracketSplit(inside):
+	evaluation = ''
+	leftE, inside = inside.split(" ", 1)
+	counter = 1
+	while(counter > 0):
+	
+		if(leftE == '('):
+			counter += 1
+			evaluation += ' ('
+		elif(leftE == ')'):
+			counter -= 1
+			if(counter > 0):
+				evaluation += (' )') 
+			else:
+				break
+		else:
+			evaluation += (' ' + leftE)
+		if (len(inside) == 1):
+			leftE = inside
+			inside = ""
+		else:
+			leftE, inside = inside.split(" ", 1)
+	return evaluation.split(' ', 1)[1], inside
 
-    for i in exp:
-        if i in complex_operators:
-            queue += i
-    for i in exp:
-        if i in simple_operators:
-            queue += i
-    if (queue != ""):
-        node.data = queue[0]
-        dot.node(node.id, node.data)
-        dot.edge(root.id, node.id)
-        position = exp.index(node.data)
-        organise_tree(exp[0 : position], node, index_l, position, 0, index)
-        organise_tree(exp[position + 1:], node, position + 1, index_r, 1, index)
-    elif len(exp) == 1:
-        if exp[0] in numbers:
-            node.data = exp[0]
-            dot.node(node.id, node.data)
-            dot.edge(root.id, node.id)
-        else:
-            raise Exception(exp, "bad value")
+def eval(tree):
+	if(tree.right == None or tree.left == None):
+		return float(tree.value)
+	else:
+		if(tree.value == '+'):
+			return eval(tree.left) + eval(tree.right)
+		elif(tree.value == '-'):
+			return eval(tree.left) - eval(tree.right)
+		elif(tree.value == '*'):
+			return eval(tree.left) * eval(tree.right)
+		elif(tree.value == '/'):
+			return eval(tree.left) / eval(tree.right)
 
-def temp():
-    
+counter = 0
+def labelTree(dot, tree):
+    global counter
+    counter += 1
+    label = counter
+    dot.node(str(label), tree.value)
+    if (tree.left != None and tree.right != None):
+        leftLabel = labelTree(dot, tree.left)
+        rightLabel = labelTree(dot, tree.right)
+        dot.edge(str(label), str(leftLabel))
+        dot.edge(str(label), str(rightLabel))
+    return label
 
-def print_tree(tree):
-    print(tree.data)
-    if (tree.left != None):
-        print_tree(tree.left)
-    if (tree.right != None):
-        print_tree(tree.right)
+def drawTree(tree):
+    dot = Digraph(format = 'png')
+    labelTree(dot, tree)
+    dot.render('tree.gv', view = True)
 
-expr = sys.argv[1:]
-if (len(expr) == 0):
-    exit(-1)
+userInput = input()
 
-dot = Digraph(comment="Expression")
-numbers = "0123456789"
-simple_operators = "+-"
-complex_operators = "*/"
-queue = ""
-
-for i in expr:
-    if i in complex_operators:
-        queue += i
-    
-for i in expr:
-    if i in simple_operators:
-        queue += i
-
-
-print_tree(make_tree(expr))
-dot.render('expr.gv', view=True)
+tree = make_tree(userInput)
+print(eval(tree))
+drawTree(tree)
