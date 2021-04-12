@@ -1,0 +1,36 @@
+<div class="container">
+  <div class="display">
+    <p class="expression" >{{$expression | async}}</p>
+    <p class="current-number" >{{currentNumber}}</p>
+  </div>
+  <div class="buttons-grid">
+    <button class="btn btn-operation" (click)="onOperationButton('^')">x<sup>y</sup></button>
+    <button class="btn btn-operation clear-btn" (click)="onClearButton('CE')">CE</button>
+    <button class="btn btn-operation clear-btn" (click)="onClearButton('C')">C</button>
+    <button class="btn btn-operation" (click)="onOperationButton('sqrt')">&#8730;</button>
+    <button class="btn btn-operation" (click)="onOperationButton('(')">(</button>
+    <button class="btn btn-operation" (click)="onOperationButton(')')">)</button>
+    <button class="btn btn-operation" (click)="onOperationButton('fact')">x!</button>
+    <button class="btn btn-operation" (click)="onOperationButton('/')">/</button>
+    <button class="btn btn-operation" (click)="onOperationButton('abs')">|x|</button>
+    <button class="btn btn-number" (click)="onNumberButton('7')">7</button>
+    <button class="btn btn-number" (click)="onNumberButton('8')">8</button>
+    <button class="btn btn-number" (click)="onNumberButton('9')">9</button>
+    <button class="btn btn-operation" (click)="onOperationButton('*')">*</button>
+    <button class="btn btn-operation" (click)="onOperationButton('mod')">mod</button>
+    <button class="btn btn-number" (click)="onNumberButton('4')">4</button>
+    <button class="btn btn-number" (click)="onNumberButton('5')">5</button>
+    <button class="btn btn-number" (click)="onNumberButton('6')">6</button>
+    <button class="btn btn-operation" (click)="onOperationButton('-')">-</button>
+    <button class="btn btn-operation" (click)="onOperationButton('rec')">1/x</button>
+    <button class="btn btn-number" (click)="onNumberButton('1')">1</button>
+    <button class="btn btn-number" (click)="onNumberButton('2')">2</button>
+    <button class="btn btn-number" (click)="onNumberButton('3')">3</button>
+    <button class="btn btn-operation" (click)="onOperationButton('+')">+</button>
+    <button class="btn btn-operation" (click)="onOperationButton('log')">log</button>
+    <button class="btn btn-number" (click)="onNumberButton('+-')">&plusmn;</button>
+    <button class="btn btn-number" (click)="onNumberButton('0')">0</button>
+    <button class="btn btn-number" (click)="onNumberButton('.')">.</button>
+    <button class="btn btn-equals" (click)="onOperationButton('=')">=</button>
+  </div>
+</div>

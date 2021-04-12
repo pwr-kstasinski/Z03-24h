@@ -1,0 +1,16 @@
+.btn {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #efefef;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+  }
+  
+  &:hover {
+    background-color: darken(#efefef, 20%);
+  }
+}

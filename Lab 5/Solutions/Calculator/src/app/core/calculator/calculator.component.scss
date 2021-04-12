@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background-color: #C4C4C4;
+  padding: 20px;
+}
+
+.buttons-grid {
+  display: grid;
+  grid-template: repeat(6, 50px) / repeat(5, 50px);
+  grid-gap: 10px;
+
+  .clear-btn {
+    grid-column: span 2;
+  }
+
+  .btn {
+    appearance: none;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+
+    transition: 0.2s background-color ease-in-out;
+
+    &.btn-operation {
+      background-color: #799DFA;
+
+      &:hover {
+        background-color: lighten(#799DFA, 10%);
+        border: 2px solid darken(#799DFA, 10%);
+      }
+    }
+
+    &.btn-equals {
+      background-color: #3B6CEB;
+
+      &:hover {
+        background-color: lighten(#3B6CEB, 10%);
+        border: 2px solid darken(#3B6CEB, 10%);
+      }
+    }
+
+    &.btn-number {
+      background-color: white;
+
+      &:hover {
+        background-color: darken(white, 10%);
+        border: 2px solid darken(white, 40%);
+      }
+    }
+  }
+}
+
+.display {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 5px;
+  background-color: #ECECEC;
+  margin-bottom: 10px;
+
+  p {
+    margin: 0;
+    text-align: right;
+    border: 0;
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+
+  .expression {
+    height: 16px;
+    font-size: 12px;
+  }
+
+  .current-number {
+    font-size: 16px;
+  }
+}
