@@ -4,7 +4,7 @@ const twoArgOperations = ['+', '-', '/', '*', '^', '%']
 export const operations = ['+', '-', '/', '*', '(', ')', '^', '%', '!', 'abs', 'log', 'sqrt', 'rev', 'log']
 
 const opr_priotity = Object.freeze({
-    '^': 4, 'sqrt': 4, 'abs': 4, 'log': 4, 'rev': 4,
+    '^': 4, 'sqrt': 4, 'abs': 4, 'log': 4, 'rev': 4, '!': 4,
     '*': 3, '/': 3, '%': 3,
     '-': 2, '+': 2,
     '(': 1, ')': 1
