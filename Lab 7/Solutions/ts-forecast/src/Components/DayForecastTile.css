@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+.forecast-tile{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+
+    border: 1px solid black;
+    padding: 10px 20px;
+
+    font-size: 20px;
+    font-family: 'Roboto', Verdana, sans-serif
+}
+
+.forecast-tile__day{
+}
+
+.forecast-tile__temp-day{
+    font-size: 1.5em;
+    color: blue;
+}
+
+.forecast-tile__temp-night{
+    color: blue;
+}
+
+.forecast-tile__day{
+
+}
