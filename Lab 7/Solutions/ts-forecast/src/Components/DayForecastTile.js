@@ -14,7 +14,7 @@ export default function DayForecastTile({ styleName = "", dayLabel = "Today", da
             <div className="forecast-tile__temp-night">
                 {nightTemp}°
             </div>
-            {iconUrl && <img className="forecast-tile__icon" alt="weather" />}
+            {iconUrl && <img src={iconUrl} className="forecast-tile__icon" alt="weather" />}
             <div className="forecast-tile__rain-chance">
                 <img src={cloud_rain} className="forecast-tile__rain-chance-img" alt="rain clounds" />
                 {rainChance}%
