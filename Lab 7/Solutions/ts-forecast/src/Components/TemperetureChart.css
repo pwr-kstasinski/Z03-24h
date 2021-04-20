@@ -1,0 +1,10 @@
+.temp-chart{
+    display: flex;
+    height: 200px;
+    flex-direction: row;
+    flex-grow: none;
+    width: 500px;
+    border: 2px solid black;
+    align-items: flex-end;
+    padding: 10px;
+}
