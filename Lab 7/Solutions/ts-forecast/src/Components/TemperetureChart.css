@@ -3,7 +3,7 @@
     height: 200px;
     flex-direction: row;
     flex-grow: none;
-    width: 500px;
+    width: fit-content;
     border: 2px solid black;
     align-items: flex-end;
     padding: 10px;
