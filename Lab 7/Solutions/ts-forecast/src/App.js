@@ -22,7 +22,8 @@ const status = Object.freeze({ OK: 1, NOT_FOUND: 2, LOADING: 3, ERROR: 4 })
 
 function App() {
   const [cityName, setCityname] = useState("Wrocław")
-  const [currentStatus, setCurrentStatus] = useState(status.LOADING) // powinno być oddzielnie dla każdecho fetcha !!!
+  const [hourlyStatus, setHourlyStatus] = useState(status.LOADING)
+  const [forecastStatus,setForecastStatus] = useState(status.LOADING)
   const [dailyData, setDailyData] = useState(null)
   const [selectedTile, setSelectedTile] = useState(0)
   const [hourlyData, sethourlyData] = useState(null)
@@ -30,7 +31,8 @@ function App() {
   const textFieldRef = useRef(null)
 
   const handleBtnClick = e => {
-    setCurrentStatus(status.LOADING)
+    setHourlyStatus(status.LOADING)
+    setForecastStatus(status.LOADING)
     setCityname(textFieldRef.current.value)
   }
 
@@ -51,13 +53,13 @@ function App() {
     getDaily(cityName, "", 3)
       .then(response => {
         if (response.status === 200) {
-          setCurrentStatus(status.OK)
+          setForecastStatus(status.OK)
           return response.json()
         }
         if (response.status === 204)
-          setCurrentStatus(status.NOT_FOUND)
+          setForecastStatus(status.NOT_FOUND)
         else
-          setCurrentStatus(status.ERROR)
+          setForecastStatus(status.ERROR)
       })
       .then(data => {
         if (data) {
@@ -70,13 +72,13 @@ function App() {
     getHourly(cityName, "")
       .then(response => {
         if (response.status === 200) {
-          setCurrentStatus(status.OK)
+          setHourlyStatus(status.OK)
           return response.json()
         }
         if (response.status === 204)
-          setCurrentStatus(status.NOT_FOUND)
+          setHourlyStatus(status.NOT_FOUND)
         else
-          setCurrentStatus(status.ERROR)
+          setHourlyStatus(status.ERROR)
       })
       .then(data => {
         if (data)
@@ -89,7 +91,7 @@ function App() {
   const weather_tiles = []
 
   // generate tiles for evry foracast day
-  if (currentStatus == status.OK && dailyData) {
+  if (forecastStatus == status.OK && dailyData) {
     let first_elem = true
     let tileIndex = 0
     const tiles = dailyData.data.map(data => {
@@ -119,12 +121,12 @@ function App() {
         <button onClick={handleBtnClick}>Szukaj</button>
       </div>
       <h2>Dzisiejsza prognoza dla {cityName}:</h2>
-      {currentStatus == status.NOT_FOUND && <label style={{ color: "red", fontSize: "30px", fontWeight: "bold" }}>Nie odnaleziono mista</label>}
-      {currentStatus == status.LOADING && <label style={{ fontSize: "30px", fontWeight: "bold" }}>Ładuję...</label>}
+      {forecastStatus == status.NOT_FOUND && <label style={{ color: "red", fontSize: "30px", fontWeight: "bold" }}>Nie odnaleziono mista</label>}
+      {forecastStatus == status.LOADING && <label style={{ fontSize: "30px", fontWeight: "bold" }}>Ładuję...</label>}
       <div className="tiles-container">
         {weather_tiles}
       </div>
-      {chartData && currentStatus == status.OK && <TemperatureChart temperatures={chartData}></TemperatureChart>}
+      {chartData && hourlyStatus == status.OK && <TemperatureChart temperatures={chartData}></TemperatureChart>}
     </div >
   );
 }
