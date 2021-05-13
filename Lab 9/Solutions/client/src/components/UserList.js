@@ -6,7 +6,7 @@ function getAllUsers() {
 
 function UserList({ onUserSelect = (username) => { } }) {
     const [users, setUsers] = useState(null)
-    const [selectedUsr, setSelectedUsr] = useState(null)
+    const [selectedUsr, setSelectedUsr] = useState("")
 
     useEffect(() => {
         getAllUsers()
@@ -25,7 +25,7 @@ function UserList({ onUserSelect = (username) => { } }) {
     if (users)
         users_comp = users.map(user => {
             return (
-                <li>
+                <li onClick={() => onUserSelect(user.name)}>
                     {user.name}
                 </li>
             )
