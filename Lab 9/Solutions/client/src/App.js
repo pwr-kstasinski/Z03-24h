@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom'
 import Login from './Layouts/Login'
+import UserPanel from './Layouts/UserPanel'
 
 
 function App() {
@@ -8,14 +9,16 @@ function App() {
   const [loginMessage, setLoginMessage] = useState(null)
 
   const handleLoginSucces = (username, loginMessage) => {
-      alert("YES")
+    setUsername(username)
+    setLoginMessage(loginMessage)
   }
 
   return (
     <Router>
-      {username || <Redirect to="/login" />}
+      {username ? <Redirect to="/panel" /> : <Redirect to="/login" />}
       <div className="App">
         <Route exact path="/login" render={() => (<Login onLoginSucces={handleLoginSucces} />)} />
+        <Route exact path="/panel" render={() => (<UserPanel username={username} />)} />
       </div>
     </Router>
   );

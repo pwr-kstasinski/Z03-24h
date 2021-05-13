@@ -3,8 +3,17 @@ import React, { useRef } from 'react';
 function login(username, password) {
     return fetch('http://localhost:5000/login', {
         method: 'POST',
-        body: JSON.stringify({ usr_name: username, passwd: password })
+        credentials: 'include',
+        body: JSON.stringify({ usr_name: username, passwd: password }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+
     })
+}
+
+function register(username, password) {
+
 }
 
 function Login({ onLoginSucces = (username, loginMessage) => { } }) {
@@ -18,12 +27,23 @@ function Login({ onLoginSucces = (username, loginMessage) => { } }) {
         login(username, password)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 if (data) {
                     if (data.status == "succes") {
-                        alert("YEEE")
-                        onLoginSucces(username, "")
+                        onLoginSucces(username, data.message)
                     }
+                }
+            })
+    }
+
+    const handleCreateAccount = () => {
+        const username = loginRef.current.value
+        const password = passRef.current.value
+
+        login(username, password)
+            .then(response => response.json())
+            .then(data => {
+                if (data) {
+                    console.log(data);
                 }
             })
     }
@@ -33,7 +53,7 @@ function Login({ onLoginSucces = (username, loginMessage) => { } }) {
             <input type="text" ref={loginRef}></input>
             <input type="text" ref={passRef}></input>
             <button onClick={handleLogin}>Zaloguj</button>
-            <button>Zarejestruj</button>
+            <button onClick={handleCreateAccount}>Zarejestruj</button>
         </div>
     )
 

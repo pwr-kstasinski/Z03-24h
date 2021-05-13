@@ -7,12 +7,11 @@ from sqlalchemy import and_, or_
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/": {"origins": "*"}})
-app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqllite3'
 app.secret_key = "SUPER_secreet_key"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.permanent_session_lifetime = timedelta(minutes=5)
+CORS(app, supports_credentials=True)
 
 db = SQLAlchemy(app)
 
@@ -52,6 +51,13 @@ db.create_all()
 # db.session.add(Message("Jan1","YEEEEE", user_target="test"))
 # db.session.commit()
 
+@app.route('/pong', methods = ["GET"])
+def pong():
+    if 't' in session:
+        session.clear()
+        return f"pong session",200
+    session["t"] = "YEE"
+    return "pong",200
 
 @app.route("/create_account", methods = ["POST"])
 def createAccount():
@@ -70,6 +76,7 @@ def createAccount():
     return {"status": "succes","message": "Account created"}, 201
 
 @app.route("/login", methods = ["POST"])
+#@cross_origin(origin='*')
 def login():
     content = request.json
     usr_name = content["usr_name"]

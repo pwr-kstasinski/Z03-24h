@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 function getAllUsers() {
-    return fetch("localhost:8000/users")
+    return fetch("http://localhost:5000/users", { credentials: 'include' })
 }
 
 function UserList({ onUserSelect = (username) => { } }) {
@@ -13,12 +13,29 @@ function UserList({ onUserSelect = (username) => { } }) {
             .then(response => response.json())
             .then(data => {
                 if (data) {
+                    console.log(data)
                     if (data.status == "succes") {
                         setUsers(data.users)
                     }
                 }
             })
     }, [])
+
+    let users_comp = null
+    if (users)
+        users_comp = users.map(user => {
+            return (
+                <li>
+                    {user.name}
+                </li>
+            )
+        })
+
+    return (
+        <div>
+            {users_comp}
+        </div>
+    )
 }
 
 export default UserList
