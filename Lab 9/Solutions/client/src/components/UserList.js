@@ -21,19 +21,29 @@ function UserList({ onUserSelect = (username) => { } }) {
             })
     }, [])
 
-    let users_comp = null
+    let users_comp = [(
+        <button onClick={() => onUserSelect("")}>
+            Global
+        </button>
+    )]
+
     if (users)
-        users_comp = users.map(user => {
+        users_comp.push(...users.map(user => {
             return (
-                <li onClick={() => onUserSelect(user.name)}>
+                <button onClick={() => onUserSelect(user.name)} style={{ "display": "block" }}>
                     {user.name}
-                </li>
+                </button>
             )
-        })
+        }))
+
+
 
     return (
         <div>
-            {users_comp}
+            Użytkownicy:
+            <ul>
+                {users_comp}
+            </ul>
         </div>
     )
 }

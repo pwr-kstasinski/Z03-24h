@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 import UserList from '../components/UserList'
 import MessageView from '../components/MessageView'
 
-function UserPanel({ username }) {
+function UserPanel({ username, onLogout = () => { } }) {
     const [selectedUser, setSelectedUser] = useState("")
+
     const handleUserSelect = (username) => {
         setSelectedUser(username)
-        alert(username)
     }
 
     return (
         <div>
-            Witaj {username}
+            Witaj {username} <button onClick={onLogout}>Wyloguj</button>
+            <hr></hr>
             <UserList onUserSelect={handleUserSelect}></UserList>
             <hr />
-            <MessageView username={selectedUser}></MessageView>
+            <MessageView username={selectedUser} llogedUsername={username}></MessageView>
         </div>
     )
 }

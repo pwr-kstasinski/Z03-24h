@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 function login(username, password) {
     return fetch('http://localhost:5000/login', {
@@ -27,6 +27,7 @@ function register(username, password) {
 function Login({ onLoginSucces = (username, loginMessage) => { } }) {
     const passRef = useRef()
     const loginRef = useRef()
+    const [loginMessage, setLoginMessage] = useState(null)
 
     const handleLogin = () => {
         const username = loginRef.current.value
@@ -39,6 +40,7 @@ function Login({ onLoginSucces = (username, loginMessage) => { } }) {
                     if (data.status == "succes") {
                         onLoginSucces(username, data.message)
                     }
+                    setLoginMessage(data.message)
                 }
             })
     }
@@ -52,6 +54,7 @@ function Login({ onLoginSucces = (username, loginMessage) => { } }) {
             .then(data => {
                 if (data) {
                     console.log(data);
+                    setLoginMessage(data.message)
                 }
             })
     }
@@ -62,6 +65,7 @@ function Login({ onLoginSucces = (username, loginMessage) => { } }) {
             <input type="text" ref={passRef}></input>
             <button onClick={handleLogin}>Zaloguj</button>
             <button onClick={handleCreateAccount}>Zarejestruj</button>
+            {loginMessage}
         </div>
     )
 

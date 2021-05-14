@@ -1,44 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import UserList from './UserList';
+import React, { useEffect, useState, useRef } from 'react';
 
 function getMessagesFrom(username) {
+    if (username == "")
+        return fetch(`http://localhost:5000/brodcast`, { credentials: 'include' })
     return fetch(`http://localhost:5000/recive/${username}`, { credentials: 'include' })
 }
 
-function getBrodcastMessages() {
-    return fetch(`http://localhost:5000/brodcast`, { credentials: 'include' })
-}
-
 function sendMessage(username, content) {
-    return fetch(`http://localhost:5000/brodcast`, {
+    if (username == "")
+        return fetch(`http://localhost:5000/brodcast`, {
+            method: "POST",
+            credentials: 'include',
+            body: JSON.stringify({ content }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    return fetch(`http://localhost:5000/send`, {
         method: "POST",
         credentials: 'include',
-        body: JSON.stringify({ content, username: "test" }),
+        body: JSON.stringify({ content, target: username }),
         headers: {
             'Content-Type': 'application/json'
         }
     })
 }
 
-function MsssageView({ username = "" }) {
+function MsssageView({ username = "", llogedUsername = "" }) {
     const [messages, setMessages] = useState(null)
+    const messageRef = useRef(null)
+
     useEffect(() => {
-        if (username == "") {
-            getBrodcastMessages()
-                .then(resp => resp.json())
-                .then(data => {
-                    console.log(data);
-                    setMessages(data.messages)
-                })
-        }
-        else {
-            getMessagesFrom(username)
-                .then(resp => resp.json())
-                .then(data => {
-                    setMessages(data.messages)
-                })
-        }
+        handleMessageRefresh()
     }, [username])
+
+    const handleMessageRefresh = () => {
+        getMessagesFrom(username)
+            .then(resp => resp.json())
+            .then(data => {
+                setMessages(data.messages)
+            })
+    }
+
+    const handleMessageSend = () => {
+        const content = messageRef.current.value
+        sendMessage(username, content)
+            .then(resp => resp.json())
+            .then(data => {
+                console.log(data);
+            })
+    }
 
     let message_comp = null
     console.log(messages);
@@ -46,18 +57,19 @@ function MsssageView({ username = "" }) {
         message_comp = messages.map(mesage => {
             return (
                 <li>
-                    {mesage.content}
+                    <b>{mesage.sender}</b>: {mesage.content}
                 </li>
             )
         })
 
     return (
         <div>
+            <h2>Wiadomości od {username || "Wszystkich"}</h2>
             {message_comp}
             <div>
-                <input type="text"></input>
-                <button>wyślij</button>
-                <button>odśwież</button>
+                <input type="text" ref={messageRef}></input>
+                <button onClick={handleMessageSend}>wyślij</button>
+                <button onClick={handleMessageRefresh}>odśwież</button>
             </div>
         </div>
     )
