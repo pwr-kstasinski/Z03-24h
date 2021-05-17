@@ -1,0 +1,21 @@
+<div class='card d-flex flex-column' style='height: 90vh;'>
+  <div #messagesRef class='flex-grow-1' style='overflow-y: scroll'>
+    <ul class='list-group'>
+      <li *ngFor='let message of messagesList' class='list-group-item d-flex flex-column'
+          [class.align-items-end]='message.senderId == userId'
+          [ngStyle]="{'background-color': message.senderId == userId ? '#F7F7F8' : '#fff'}">
+        <span class='author'>{{usersList && usersList[message.senderId]}}</span>
+        <p style='max-width: 75%;' class='m-0'>{{ message.message }}</p>
+      </li>
+    </ul>
+  </div>
+  <div class='input-group bg-white'>
+    <input type='text' class='form-control' placeholder='Wiadomość' [formControl]='messageControl'>
+    <div class='input-group-append'>
+      <button class='btn btn-outline-primary' type='button' (click)='sendMessage()'>Wyślij</button>
+    </div>
+    <div class='input-group-append'>
+      <button class='btn btn-primary' type='button' (click)='getMessages()'>Odśwież</button>
+    </div>
+  </div>
+</div>

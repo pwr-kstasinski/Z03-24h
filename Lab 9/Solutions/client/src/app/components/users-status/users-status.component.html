@@ -1,0 +1,5 @@
+<ul class='list-group'>
+  <li class='list-group-item' (click)='goToGeneral()' style='cursor: pointer'>General</li>
+  <li class='list-group-item' *ngFor='let user of usersList' (click)='openChat(user.id)'
+      style='cursor: pointer'>{{user.login}} Status: {{user.online ? 'online' : 'offline'}}</li>
+</ul>

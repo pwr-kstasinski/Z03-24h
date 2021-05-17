@@ -1,0 +1,24 @@
+Get messages
+---
+tags: [message]
+description: Get list of messages
+parameters:
+  - in: body
+    name: message
+    required: true
+    schema:
+      $ref: '#/definitions/Message'
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+
+responses:
+  200:
+    description: List of messages
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/Message'
+
