@@ -28,8 +28,9 @@ def handle_client(conn, addr):
 
 	connected = True
 	myUser = ''
-	mycursor.execute("UPDATE users SET isLogged = 'No'")
-	mydb.commit()
+	#mycursor.execute("UPDATE users SET isLogged = 'No'")
+	#mydb.commit()
+
 	while connected:
 		msg_length = conn.recv(HEADER).decode(FORMAT)
 		if msg_length:
@@ -76,9 +77,29 @@ def handle_client(conn, addr):
 					conn.send("0".encode(FORMAT))
 			#update
 			elif code == "3":
+				values = msg.split(";")
+				sql = "SELECT DISTINCT source FROM message WHERE dest = %s ORDER BY id DESC"
+				val = (values[1], )
+				mycursor.execute(sql,val)
+				received = mycursor.fetchall()
+
+				sql = "SELECT DISTINCT dest FROM message WHERE source = %s ORDER BY id DESC"
+				val = (values[1], )
+				mycursor.execute(sql,val)
+				sent = mycursor.fetchall()
+				for i in sent:
+					if i not in received:
+						received.append()
+
+				myresult = sent
 				sql = "SELECT username FROM users WHERE isLogged = 'Yes'"
 				mycursor.execute(sql)
-				myresult = mycursor.fetchall()
+				recent = mycursor.fetchall()
+				print(recent)
+				print(myresult)
+				for i in recent:
+					if i not in myresult:
+						myresult.append(i)
 				if myresult is not None and len(myresult) > 0:
 					callback = str(len(myresult))
 					for i in range(len(myresult)):
@@ -89,23 +110,25 @@ def handle_client(conn, addr):
 			#choose user
 			elif code == "4":
 				source, destination = msg.split(";",1)
-				sql = "SELECT * FROM message WHERE (source = %s AND dest = %s) OR (source = %s AND dest = %s)"
+				sql = "SELECT * FROM message WHERE (source = %s AND dest = %s) OR (source = %s AND dest = %s) ORDER BY id DESC"
 				val = (source,destination,destination,source,)
 				mycursor.execute(sql,val)
 				myresult = mycursor.fetchall()
 				if myresult is not None:
 					callback = str(len(myresult))
 					for i in range(len(myresult)):
-						for j in range(6):
+						for j in range(4):
 							callback += ";" + str(myresult[i][j])
 					conn.send(callback.encode(FORMAT))
 				else:
 					conn.send("0;0".encode(FORMAT))
 			elif code == "5":
 				data = msg.split(";")
-				sql = "INSERT INTO message (dest, source, text, sent) VALUES(%s, %s, %s, %s)"
-				val = (data[2],data[1],data[0],data[3],)
+				sql = "INSERT INTO message (dest, source, text) VALUES(%s, %s, %s)"
+				val = (data[2],data[1],data[0],)
 				mycursor.execute(sql,val)
+				mydb.commit()
+				conn.send("1".encode(FORMAT))
 	#loguot
 	if myUser == '':
 		sql = "UPDATE users SET isLogged = 'No' WHERE username = %s"

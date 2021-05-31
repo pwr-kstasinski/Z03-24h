@@ -16,6 +16,7 @@ myUsername = ""
 myLink = "None"
 myMessage = ""
 isLogged = False
+messageId = 0
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
@@ -55,7 +56,7 @@ def send(msg):
 		OnlineLabel['text'] = f"Online users: {counter}"
 		onlineText['state'] = 'normal'
 		onlineText.delete(1.0,tk.END)
-		for i in range(1, counter + 1):
+		for i in range(1 ,counter + 1):
 			onlineText.insert(1.0, f"{activeUsers[i]}\n")
 		onlineText['state'] = 'disabled'
 		return True
@@ -65,18 +66,22 @@ def send(msg):
 		counter = int(messages[0])
 		messageBox['state'] = 'normal'
 		messageBox.delete(1.0, tk.END)
-		for i in range(1, counter * 5 + 1, 6):
-			messageBox.insert(1.0, f"message from{messages[i+2]} to {messages[i+1]} at {messages[i+4]}:\n {messages[i+3]}")
+		for i in range(1, counter * 4 + 1, 4):
+			messageBox.insert(1.0, f"message from {messages[i+2]} to {messages[i+1]}:\n {messages[i+3]}\n")
 		messageBox['state'] = 'disabled'
 
 	#sent message(text, source, destination, date)
 	elif callback == "5":
-		pass
+		return True
 	
 	return True
 
+
 def update():
-	send("3;0")
+	global messageId
+	global myUsername
+	global myLink
+	send("3;" + str(messageId) + ";" + myUsername)
 	root.after(1000, update) # run itself again after 1000 ms
 
 #popup window
@@ -115,8 +120,7 @@ def sendMessage():
 	now = datetime.datetime.now()
 	formatted_date = now.strftime('%Y-%m-%d %H:%M:%S')
 	global myLink
-	myMessage += ";" + myUsername + ";" + myLink + ";" + formatted_date
-	print(myMessage)
+	myMessage += ";" + myUsername + ";" + myLink
 	send(myMessage)
 
 #window
