@@ -76,4 +76,6 @@ W chwili obecnej system posiada następujące możliwości:
 
 ## Dodatkowa dokumentacja
 
-- Komunikacja w czasie rzeczywistym (serwer -> klient) wymaga zastosowania odpowieniego portokołu, np websocket. Więcej informacji można znaleźć pod linkiem: [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html)
+- Komunikacja w czasie rzeczywistym (serwer -> klient) wymaga zastosowania odpowieniego portokołu, np websocket. Więcej informacji można znaleźć pod linkami:
+  - [websockets](https://websockets.readthedocs.io/en/stable/intro.html)
+  - [socket-io](https://tutorialedge.net/python/python-socket-io-tutorial/)
