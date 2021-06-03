@@ -7,7 +7,7 @@ from sqlalchemy.sql.expression import select
 
 HEADER = 64
 PORT = 5050
-SERVER = "192.168.100.5"
+SERVER = "192.168.0.13"
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 
@@ -32,11 +32,13 @@ def handle_client(conn, addr):
 	#mydb.commit()
 
 	while connected:
+		#decoding
 		msg_length = conn.recv(HEADER).decode(FORMAT)
 		if msg_length:
 			msg_length = int(msg_length)
 			msg = conn.recv(msg_length).decode(FORMAT)
 			code, msg = msg.split(";", 1)
+			
 			#login
 			if code == "1":
 				callback = "0"
@@ -55,11 +57,11 @@ def handle_client(conn, addr):
 						callback = "1"
 						sql = "UPDATE users SET isLogged = 'Yes' WHERE username = %s"
 						mycursor.execute(sql, val)
+						myUser = username
 						mydb.commit()
-				sql = "SELECT username FROM users WHERE isLogged = 'Yes'"
-				mycursor.execute(sql)
-				myresult = mycursor.fetchall()
+		
 				conn.send(callback.encode(FORMAT))
+			
 			#register
 			elif code == "2":
 				username, password = msg.split(";", 1)
@@ -75,38 +77,69 @@ def handle_client(conn, addr):
 					conn.send("1".encode(FORMAT))
 				else:
 					conn.send("0".encode(FORMAT))
+			
 			#update
 			elif code == "3":
+				#received
 				values = msg.split(";")
-				sql = "SELECT DISTINCT source FROM message WHERE dest = %s ORDER BY id DESC"
+				sql = "SELECT source, id FROM message WHERE dest = %s ORDER BY id DESC"
 				val = (values[1], )
 				mycursor.execute(sql,val)
 				received = mycursor.fetchall()
 
-				sql = "SELECT DISTINCT dest FROM message WHERE source = %s ORDER BY id DESC"
+				sql = "SELECT dest, id FROM message WHERE source = %s ORDER BY id DESC"
 				val = (values[1], )
 				mycursor.execute(sql,val)
 				sent = mycursor.fetchall()
 				for i in sent:
 					if i not in received:
-						received.append()
-
-				myresult = sent
+						received.append(i)
+				
+				myresult = []
+				results = sorted(received, key= lambda tup: tup[1], reverse=True)
+				for i in results:
+					if i[0] not in myresult:
+						myresult.append(i[0])
 				sql = "SELECT username FROM users WHERE isLogged = 'Yes'"
 				mycursor.execute(sql)
 				recent = mycursor.fetchall()
-				print(recent)
-				print(myresult)
+	
 				for i in recent:
-					if i not in myresult:
-						myresult.append(i)
+					if i[0] not in myresult:
+						myresult.append(i[0])
+
+				#lista aktywności
+				#lista wiadomości		
+				myresult.reverse()
+				users = len(myresult)
+				activity = []
+				messages = []
+
+				for i in myresult:
+					sql = "SELECT isLogged FROM users WHERE username = %s"
+					val = (i,)
+					mycursor.execute(sql, val)
+					recent = mycursor.fetchall()
+					activity.append(recent[0])
+				
+					sql = "SELECT id FROM message WHERE dest = %s AND source = %s AND id > %s"
+					val = (values[1], i, values[0])
+					mycursor.execute(sql, val)
+					recent = mycursor.fetchall()
+					messages.append(str(len(recent)))
+
+
+				myresult.extend(activity)
+				myresult.extend(messages)
+			
 				if myresult is not None and len(myresult) > 0:
-					callback = str(len(myresult))
+					callback = str(users)
 					for i in range(len(myresult)):
 						callback += ";" + str(myresult[i][0])
 					conn.send(callback.encode(FORMAT))
 				else:
 					conn.send("0;None".encode(FORMAT))
+			
 			#choose user
 			elif code == "4":
 				source, destination = msg.split(";",1)
@@ -129,11 +162,18 @@ def handle_client(conn, addr):
 				mycursor.execute(sql,val)
 				mydb.commit()
 				conn.send("1".encode(FORMAT))
+			elif code == "6":
+				if myUser != '':
+					sql = "UPDATE users SET isLogged = 'No' WHERE username = %s"
+					mycursor.execute(sql,(myUser,))
+					mydb.commit()
+				conn.send("1".encode(FORMAT))
 	#loguot
-	if myUser == '':
+	if myUser != '':
 		sql = "UPDATE users SET isLogged = 'No' WHERE username = %s"
 		mycursor.execute(sql,(myUser,))
 		mydb.commit()
+	myUser = ""
 	conn.close()
         
 

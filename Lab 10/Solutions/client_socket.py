@@ -1,10 +1,9 @@
+
 import tkinter as tk
 import socket
 import datetime
 
-from sqlalchemy.sql.expression import false, true
-
-SERVER = "192.168.100.5"
+SERVER = "192.168.0.13"
 PORT = 5050
 HEADER = 64 
 ADDR = (SERVER, PORT)
@@ -22,44 +21,45 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
 def send(msg):
+	#encoding
+	global myUsername
+	global messageId
 	message = msg.encode(FORMAT)
 	msg_length = len(message)
 	callback = msg[0] 
-	if msg[0] == 4:
-		print(msg)
-		print(message)
-		print(msg_length)
 	send_length = str(msg_length).encode(FORMAT)
 	send_length += b' ' * (HEADER - len(send_length))
-	if callback == 4:
-		print(send_length)
 	client.send(send_length)
 	client.send(message)
 	receiveMessage = client.recv(2048).decode(FORMAT)
+
 	#login
 	if callback == "1":
 		if receiveMessage == "0":
 			return False
-		global myUsername 
 		myUsername = msg.split(";")[1]
 		usernameLabel['text'] = f"My username: {myUsername}"
 		return True
+
 	#register
 	elif callback == "2":
 		if receiveMessage == "0":
 			return False
 		return True
+
 	#update
 	elif callback == "3":
 		activeUsers = receiveMessage.split(";")
 		counter = int(activeUsers[0])
-		OnlineLabel['text'] = f"Online users: {counter}"
+		OnlineLabel['text'] = f"Users: {counter}"
 		onlineText['state'] = 'normal'
 		onlineText.delete(1.0,tk.END)
 		for i in range(1 ,counter + 1):
-			onlineText.insert(1.0, f"{activeUsers[i]}\n")
+			onlineText.insert(1.0, f"{activeUsers[i]} {activeUsers[i + counter]} {activeUsers[i + 2 * counter]}\n")
 		onlineText['state'] = 'disabled'
+		send("4;" + myUsername + ";" + myLink)
 		return True
+		
 	#show messages
 	elif callback == "4":
 		messages = receiveMessage.split(";")
@@ -67,11 +67,19 @@ def send(msg):
 		messageBox['state'] = 'normal'
 		messageBox.delete(1.0, tk.END)
 		for i in range(1, counter * 4 + 1, 4):
-			messageBox.insert(1.0, f"message from {messages[i+2]} to {messages[i+1]}:\n {messages[i+3]}\n")
+			if messages[i+2] == myUsername:
+				messageBox.insert(1.0, f"\t\t\tmessage from {messages[i+2]} to {messages[i+1]}:\n {messages[i+3]}\n")
+			else:
+				messageBox.insert(1.0, f"message from {messages[i+2]} to {messages[i+1]}:\n {messages[i+3]}\n")
+			messageId = messages[i]
 		messageBox['state'] = 'disabled'
 
 	#sent message(text, source, destination, date)
 	elif callback == "5":
+		return True
+	#logout
+	elif callback == "6":
+		myUsername = ""
 		return True
 	
 	return True
@@ -81,7 +89,7 @@ def update():
 	global messageId
 	global myUsername
 	global myLink
-	send("3;" + str(messageId) + ";" + myUsername)
+	send("3;" + str(messageId) + ";" + myUsername + ";" + myLink)
 	root.after(1000, update) # run itself again after 1000 ms
 
 #popup window
@@ -133,7 +141,7 @@ canvas.pack()
 onlineFrame = tk.Frame(root)
 onlineFrame.place(relx=0.05, rely=0, relwidth=0.2, relheight=0.9)
 
-OnlineLabel = tk.Label(onlineFrame, text="Online users: 0")
+OnlineLabel = tk.Label(onlineFrame, text="Users: 0")
 OnlineLabel.place(relx=0, rely=0.05, relwidth=1, relheight=0.05)
 
 usernameLabel = tk.Label(root, text = "My username: ")
@@ -175,6 +183,9 @@ buttonUser.place(relx=0,rely=0.05, relwidth=0.5, relheight=0.05)
 
 buttonLogin = tk.Button(root, bg="gray", text="Login",command= lambda: login_pop())
 buttonLogin.place(relx=0.45, rely=0.02, relwidth=0.3,relheight=0.05)
+
+buttonLogout = tk.Button(root, bg="gray", text="Logout",command= lambda: send("6;0"))
+buttonLogout.place(relx=0.75, rely=0.02, relwidth=0.2,relheight=0.05)
 
 
 update()
