@@ -1,0 +1,36 @@
+
+.message{
+    background-color: rgb(199, 184, 184);
+    border-radius: 5px;
+
+    margin: 10px;
+    padding: 10px;
+    width: fit-content;
+
+    align-self: flex-end;
+
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.message__time{
+    font-size: 0.7em;
+    font-style: italic;
+}
+
+.message__content{
+    margin-bottom: 10px;
+}
+
+.message__sender{
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+}
+
+.message--own{
+    align-self: auto;
+    background-color: rgb(146, 164, 236);
+}
+
+.message--notReaded{
+    border: 2px solid black
+}
