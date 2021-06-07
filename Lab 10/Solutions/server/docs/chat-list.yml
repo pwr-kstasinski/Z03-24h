@@ -1,0 +1,38 @@
+Get chats list
+---
+tags: [chat]
+description: Get list of chats
+parameters:
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+
+responses:
+  200:
+    description: List of chats
+    schema:
+      type: array
+      items:
+        schema:
+          id: Chat
+          properties:
+            id:
+              type: number
+              description: user id or group id
+            name:
+              type: string
+              description: user name or group name
+            group:
+              type: boolean
+              description: is group
+            message:
+              $ref: '#/definitions/Message'
+              description: last message
+            unread:
+              type: number
+              description: number of unread messages
+            status:
+              type: boolean
+              description: true means online, false means offline

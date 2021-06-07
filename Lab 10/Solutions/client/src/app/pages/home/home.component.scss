@@ -1,0 +1,27 @@
+.layout {
+  display: grid;
+  grid-template-rows: 50px auto;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-areas: "chat-list mess logout"
+                        "chat-list mess group";
+  width: 100vw;
+  height: 100vh;
+
+  .group {
+    grid-area: group;
+  }
+
+  .mess {
+    grid-area: mess;
+  }
+
+  .logout {
+    grid-area: logout;
+    justify-self: end;
+    align-self: center;
+  }
+
+  .chat-list {
+    grid-area: chat-list;
+  }
+}

@@ -1,0 +1,31 @@
+Get users
+---
+tags: [user]
+description: Get list of users
+parameters:
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+
+responses:
+  200:
+    description: List of users
+    schema:
+      type: array
+      items:
+        schema:
+          id: User
+          properties:
+            id:
+              type: number
+              description: user id
+            login:
+              type: string
+              description: user login
+            groups:
+              type: array
+              items:
+                $ref: '#/definitions/Group'
+

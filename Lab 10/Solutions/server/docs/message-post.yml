@@ -1,0 +1,41 @@
+Send message
+---
+tags: [message]
+parameters:
+  - in: body
+    name: message
+    required: true
+    schema:
+      id: Message
+      properties:
+        sender_id:
+          type: number
+          description: message sender id
+        receiver_id:
+          type: number
+          description: message receiver id or group id
+        message:
+          type: string
+          description: message from sender to receiver
+        group:
+          type: boolean
+          description: is group message
+        unread:
+          type: boolean
+        id:
+          type: number
+        date:
+          type: string
+          format: date-time
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+responses:
+  200:
+    description: Ok
+  400:
+    description: Bad request
+
+

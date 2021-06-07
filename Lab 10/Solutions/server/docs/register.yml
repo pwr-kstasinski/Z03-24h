@@ -1,0 +1,24 @@
+Register user
+---
+tags: [auth]
+parameters:
+  - in: body
+    name: auth
+    required: true
+    schema:
+      id: Auth
+      required: [login, password]
+      properties:
+        login:
+          type: string
+          description: user login
+        password:
+          type: string
+          description: user password
+responses:
+  201:
+    description: Register successful
+  400:
+    description: Bad request
+  409:
+    description: Login exists

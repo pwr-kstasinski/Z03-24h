@@ -1,0 +1,33 @@
+Get groups
+---
+tags: [group]
+description: Get list of groups
+parameters:
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+
+responses:
+  200:
+    description: List of groups
+    schema:
+      type: array
+      items:
+        schema:
+          id: Group
+          properties:
+            id:
+              type: number
+              description: group id
+            name:
+              type: string
+              description: group name
+            owner_id:
+              type: string
+            members:
+              type: array
+              items:
+                $ref: '#/definitions/User'
+
