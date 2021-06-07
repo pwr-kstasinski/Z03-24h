@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Route, BrowserRouter as Router, Redirect } from 'react-router-dom'
 import Login from './Layouts/Login'
 import UserPanel from './Layouts/UserPanel'
-import socketIOClient from 'socket.io-client'
 
 function logut() {
   return fetch("http://localhost:5000/logout", { credentials: 'include' })
@@ -24,8 +23,6 @@ function App() {
     logut()
     localStorage.removeItem("username")
     setUsername("")
-    const socket = socketIOClient("http://127.0.0.1:5000")
-    socket.close()
   }
 
   return (

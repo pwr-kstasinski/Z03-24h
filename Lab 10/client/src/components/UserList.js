@@ -62,6 +62,7 @@ function UserList({ onUserSelect = (username) => { }, className }) {
             else
                 getUserList()
         })
+        return () => { socket.disconnect() }
     }, [])
 
     let users_comp = [(

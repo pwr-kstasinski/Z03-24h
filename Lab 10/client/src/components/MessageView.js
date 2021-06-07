@@ -86,6 +86,8 @@ function MsssageView({ username = "", llogedUsername = "", className }) {
         handleMessageRefresh()
         const socket = socketIOClient("http://127.0.0.1:5000")
         socket.on("reload_messages", onMessageReload)
+
+        return ()=>{socket.disconnect()}
     }, [username])
 
     let message_comp = null
