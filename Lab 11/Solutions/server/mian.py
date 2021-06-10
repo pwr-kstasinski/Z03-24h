@@ -3,14 +3,26 @@ import datetime
 from flask import Flask, request, session
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, or_, func, desc
+from sqlalchemy import and_, or_, func, desc, create_engine
 from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO, emit, namespace
+import os
+
+db_user = os.environ['DB_USER']
+db_password = os.environ['DB_PASSWORD']
+db_host = os.environ['DB_HOST']
+db_port = os.environ['DB_PORT']
+
+engine = create_engine(
+    "mariadb+mariadbconnector://{}:{}@{}:{}".format(
+        db_user, db_password, db_host, db_port)
+)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqllite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:d///users.sqllite3'
 app.secret_key = "SUPER_secreet_key"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 CORS(app, supports_credentials=True)
 
