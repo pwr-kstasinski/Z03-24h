@@ -15,7 +15,7 @@ services:
     
   server:
     image: my-server
-    restart: "no"
+    restart: "unless-stopped"
     ports:
       - 5000:5000
       - 5001:5000

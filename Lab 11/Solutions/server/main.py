@@ -86,17 +86,29 @@ class Message(Base):
         self.readed = readed
 
 
-Base.metadata.clear()
-Base.metadata.create_all(bind=engine, checkfirst=True)
-getSession().commit()
+# if not engine.has_table("users") and not engine.has_table("Message"):
+try:
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+except:
+    print("Yee")
+# getSession().commit()
 
 # ========================== routes =================================
 
+health = True
+
+@app.route("/poison_pill", methods=["GET"])
+def kill():
+    global health
+    health = False
+    return "poisoned", 201
 
 @app.route('/ping', methods=["GET"])
 def pong():
-    print("ping -> pong")
+    if not health:
+        return "pong", 500
     return "pong", 200
+
 
 
 @app.route("/create_account", methods=["POST"])
