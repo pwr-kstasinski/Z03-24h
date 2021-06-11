@@ -3,39 +3,60 @@ import datetime
 from flask import Flask, request, session
 from datetime import timedelta
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import and_, or_, func, desc, create_engine
+from sqlalchemy import and_, or_, func, desc, create_engine, Column, ForeignKey, Integer, String, DATETIME, Boolean
 from flask_cors import CORS, cross_origin
 from flask_socketio import SocketIO, emit, namespace
 import os
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.sql.functions import user
 
-db_user = os.environ['DB_USER']
-db_password = os.environ['DB_PASSWORD']
-db_host = os.environ['DB_HOST']
-db_port = os.environ['DB_PORT']
+db_user = os.getenv('DB_USER', 'root')
+db_password = os.getenv('DB_PASSWORD', 'example')
+db_host = os.getenv('DB_HOST', '0.0.0.0')
+db_port = os.getenv('DB_PORT', '3306')
 
+# database connection
+# mariadb+mariadbconnector://app_user:Password123!@127.0.0.1:3306/company
+# "mariadb+mariadbconnector://{}:{}@{}:{}".format(
+#    db_user, db_password, db_host, db_port)
 engine = create_engine(
     "mariadb+mariadbconnector://{}:{}@{}:{}".format(
         db_user, db_password, db_host, db_port)
 )
+engine.execute(r"CREATE DATABASE IF NOT EXISTS messenger")
+engine.execute(r"USE messenger")
+Base = declarative_base()
 
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# app setup
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:d///users.sqllite3'
 app.secret_key = "SUPER_secreet_key"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 CORS(app, supports_credentials=True)
 
-db = SQLAlchemy(app)
 socketio = SocketIO(app, manage_session=False, cors_allowed_origins="*")
 
 
+def getSession():
+    engine.execute(r"USE messenger")
+    db = SessionLocal()
+    try:
+        return db
+    finally:
+        db.close()
+
 # ====================== dadabase ===================================
 
-class users(db.Model):
-    username = db.Column(db.String(20), primary_key=True)
-    password = db.Column("passwd", db.String(20))
-    isActive = db.Column(db.Boolean)
+
+class users(Base):
+    __tablename__ = "users"
+    username = Column(String(20), primary_key=True)
+    password = Column("passwd", String(20))
+    isActive = Column(Boolean)
 
     def __init__(self, username, password) -> None:
         self.username = username
@@ -43,15 +64,16 @@ class users(db.Model):
         self.isActive = False
 
 
-class Message(db.Model):
-    _id = db.Column("id", db.Integer, primary_key=True, autoincrement=True)
-    sender = db.Column(db.String(20), db.ForeignKey(users.username))
-    content = db.Column(db.String(200))
-    creation_date = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    user_target = db.Column(db.String(20), db.ForeignKey(
+class Message(Base):
+    __tablename__ = "Message"
+    _id = Column("id", Integer, primary_key=True, autoincrement=True)
+    sender = Column(String(20), ForeignKey(users.username))
+    content = Column(String(200))
+    creation_date = Column(DATETIME, default=datetime.datetime.utcnow)
+    user_target = Column(String(20), ForeignKey(
         users.username), nullable=True)
-    brodcast = db.Column(db.Boolean)
-    readed = db.Column(db.Boolean, default=False)
+    brodcast = Column(Boolean)
+    readed = Column(Boolean, default=False)
 
     def to_dict(self):
         return {"id": self._id, "sender": self.sender, "content": self.content, "time": self.creation_date, "readed": self.readed}
@@ -64,17 +86,16 @@ class Message(db.Model):
         self.readed = readed
 
 
-db.create_all()
-
+Base.metadata.clear()
+Base.metadata.create_all(bind=engine, checkfirst=True)
+getSession().commit()
 
 # ========================== routes =================================
 
-@app.route('/pong', methods=["GET"])
+
+@app.route('/ping', methods=["GET"])
 def pong():
-    if 't' in session:
-        session.clear()
-        return f"pong session", 200
-    session["t"] = "YEE"
+    print("ping -> pong")
     return "pong", 200
 
 
@@ -84,13 +105,14 @@ def createAccount():
     usr_name = content["usr_name"].strip()
     passwd = content["passwd"]
 
-    users_found = users.query.filter_by(username=usr_name).first()
+    db = getSession()
+    users_found = db.query(users).filter_by(username=usr_name).first()
     if users_found:
         return {"status": "fail", "message": "This username is already exist"}, 409
 
     usr = users(usr_name, passwd)
-    db.session.add(usr)
-    db.session.commit()
+    db.add(usr)
+    db.commit()
 
     socketio.emit("reload_userlist", {}, namespace="/")
 
@@ -106,13 +128,15 @@ def login():
     if 'username' in session:
         return {"status": "succes", "message": f"Yeou are already logged as {usr_name}"}, 200
 
-    found_user = users.query.filter_by(username=usr_name).first()
+    db = getSession()
+    found_user = db.query(users).filter_by(
+        username=usr_name).first()
     if (not found_user) or found_user.password != passwd:
         return {"status": "fail", "message": "Login or password is wrong"}, 401
 
     session['username'] = found_user.username
     found_user.isActive = True
-    db.session.commit()
+    db.commit()
 
     socketio.emit("reload_userlist", {}, namespace="/")
 
@@ -121,9 +145,10 @@ def login():
 
 @app.route("/logout", methods=["GET"])
 def logout():
-    user = users.query.filter_by(username=session["username"]).first()
+    db = getSession()
+    user = db.query(users).filter_by(username=session["username"]).first()
     user.isActive = False
-    db.session.commit()
+    db.commit()
 
     session.clear()
     socketio.emit("reload_userlist", {}, namespace="/")
@@ -137,7 +162,8 @@ def getMessages(username):
     if not 'username' in session:
         return {"status": "fail", "message": f"You need to log in first"}, 401
 
-    messages = Message.query.filter(or_(
+    db = getSession()
+    messages = db.query(Message).filter(or_(
         and_(Message.sender == session["username"],
              Message.user_target == username),
         and_(Message.sender == username, Message.user_target == session["username"]))
@@ -152,17 +178,19 @@ def getUsers():
     if not 'username' in session:
         return {"status": "fail", "message": f"You need to log in first"}, 401
 
-    all_users = users.query.filter(users.username != session['username']).all()
+    db = getSession()
+    all_users = db.query(users).filter(
+        users.username != session['username']).all()
 
     def usersToDict(user: users):
-        new_messages_cont = Message.query.filter(
+        new_messages_cont = db.query(Message).filter(
             and_(
                 Message.sender == user.username,
                 Message.user_target == session["username"],
                 Message.readed == False
             )).with_entities(func.count()).scalar()
 
-        recent_activity = Message.query.filter(
+        recent_activity = db.query(Message).filter(
             and_(
                 Message.sender == user.username,
                 Message.user_target == session["username"],
@@ -188,7 +216,8 @@ def setReadedMessages():
     content = request.json
     message_ids = content["msg_ids"]
 
-    messages = Message.query.filter(
+    db = getSession()
+    messages = db.query(Message).filter(
         and_(
             Message._id.in_(message_ids),
             Message.user_target == session["username"],
@@ -202,7 +231,7 @@ def setReadedMessages():
     if len(messages) >= 1:
         who = messages[0].sender
 
-    db.session.commit()
+    db.commit()
 
     socketio.emit("reload_userlist", {
         "who": session["username"]}, namespace="/")
@@ -226,15 +255,16 @@ def sendMessage():
     content = content["content"]
     sender = session['username']
 
-    target_usr = users.query.filter_by(username=target).first()
+    db = getSession()
+    target_usr = db.query(users).filter_by(username=target).first()
 
     # iiny kod błędu ?
     if not target_usr:
         return {"status": "fail", "message": f"No such user"}, 401
 
     msg = Message(sender, content, user_target=target_usr.username)
-    db.session.add(msg)
-    db.session.commit()
+    db.add(msg)
+    db.commit()
 
     socketio.emit("reload_messages", {
                   "who": target_usr.username, "from": session["username"]}, namespace="/")
@@ -254,16 +284,18 @@ def brodcastSendMsg():
         content = content["content"]
         sender = session['username']
 
+        db = getSession()
         msg = Message(sender, content, brodcast=True, readed=True)
-        db.session.add(msg)
-        db.session.commit()
+        db.add(msg)
+        db.commit()
 
         socketio.emit("reload_messages", {}, namespace="/")
 
         return {"status": "succes", "message": f""}, 201
 
     if request.method == "GET":
-        messages = Message.query.filter_by(
+        db = getSession()
+        messages = db.query(Message).filter_by(
             brodcast=True).order_by(Message.creation_date).all()
         out = list(map(Message.to_dict, messages))
         return {"status": "succes", "messages": out}, 200
@@ -282,5 +314,6 @@ def disconnect():
           session.get("userneme", "---"))
 
 
-if __name__ == '__main__':
-    socketio.run(app, debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host='0.0.0.0', port=port)

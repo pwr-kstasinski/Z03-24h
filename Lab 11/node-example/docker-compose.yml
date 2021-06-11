@@ -2,7 +2,7 @@ version: "3.1"
 
 services:
   pwr-2-server:
-    image: pwr-2:v5
+    image: pwr-2
     restart: "always"
     ports:
       - 5000:5000
@@ -14,7 +14,7 @@ services:
         DB_DEFAULT: mysql
 
   pwr-2-server-backup:
-    image: pwr-2:v3
+    image: pwr-2
     restart: "always"
     ports:
       - 5002:5000
