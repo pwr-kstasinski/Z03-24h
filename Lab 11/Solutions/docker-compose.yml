@@ -1,0 +1,35 @@
+version: "3.1"
+
+services:
+    backend:
+        container_name: server
+        restart: always
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            DB_USER: root
+            DB_PASS: PKpassword
+            DB_HOST: db
+            DB_NAME: messengerify
+            API_NAME: Messengerify API
+        ports:
+            - 5000:5000
+    pma:
+        container_name: phpMyAdmin
+        image: phpmyadmin/phpmyadmin:latest
+        restart: always
+        ports:
+            - 5010:80
+    db:
+        container_name: MySQL
+        image: mysql:5.7
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: PKpassword
+        ports:
+            - 5005:3306
+        volumes:
+            - db-vol:/var/lib/mysql
+volumes:
+    db-vol:
