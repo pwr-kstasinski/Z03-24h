@@ -78,7 +78,8 @@ def getMessages(token: str, messagesFrom: str):
         message_from = messagesFrom
         try:
             api_response = api_instance.get_messages_messages_message_from_get(message_from)
-            pprint(api_response)
+            print("Get messages from " + messagesFrom + "\n")
+            #pprint(api_response)
             if api_response:
                 messages = api_response
         except openapi_client.ApiException as e:
@@ -101,7 +102,8 @@ def sendMessage(token: str, receiverNickname: str, message: str):
         )  # MessageCreate |
         try:
             api_response = api_instance.post_message_messages_message_to_post(message_to, message_create)
-            pprint(api_response)
+            print("Send message to " + receiverNickname + "\n")
+            #pprint(api_response)
             if api_response:
                 result = api_response
         except openapi_client.ApiException as e:
@@ -120,7 +122,8 @@ def getActiveUsers(token: str):
         api_instance = default_api.DefaultApi(api_client)
         try:
             api_response = api_instance.read_active_users_active_users_get()
-            pprint(api_response)
+            print("Get active users\n")
+            #pprint(api_response)
             if api_response:
                 result = api_response
         except openapi_client.ApiException as e:
@@ -136,7 +139,8 @@ def getUserMessages(token: str):
         api_instance = default_api.DefaultApi(api_client)
         try:
             api_response = api_instance.get_user_messages_all_user_messages_get()
-            pprint(api_response)
+            print("Get own messages\n")
+            #pprint(api_response)
             if api_response:
                 result = api_response
         except openapi_client.ApiException as e:
@@ -153,7 +157,8 @@ def getConversation(token: str, otherUserName):
         other_user_nick_name = otherUserName
         try:
             api_response = api_instance.get_conversation_conversation_get(other_user_nick_name)
-            pprint(api_response)
+            print("Get conversation with " + otherUserName + "\n")
+            #pprint(api_response)
             if api_response:
                 result = api_response
         except openapi_client.ApiException as e:
@@ -172,7 +177,8 @@ def markMultipleMessagesAsViewed(token: str, sender_id: int, messagesId: List[in
         try:
             api_response = api_instance.mark_multiple_messages_as_viewed_mark_multiple_messages_as_viewed_put(sender_id,
                                                                                                               request_body)
-            pprint(api_response)
+            print("Mark messages from " + str(messagesId) + " as viewed\n")
+            #pprint(api_response)
         except openapi_client.ApiException as e:
             print(
                 "Exception when calling DefaultApi->mark_multiple_messages_as_viewed_mark_multiple_messages_as_viewed_put: %s\n" % e)
@@ -187,7 +193,8 @@ def markUserAsActive(token: str):
         api_instance = default_api.DefaultApi(api_client)
         try:
             api_response = api_instance.mark_as_active_inactive_user_put()
-            pprint(api_response)
+            print("Mark user as active\n")
+            #pprint(api_response)
         except openapi_client.ApiException as e:
             print("Exception when calling DefaultApi->mark_as_active_inactive_user_put: %s\n" % e)
 

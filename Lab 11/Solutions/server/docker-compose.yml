@@ -6,25 +6,42 @@ version: "3.1"
 #    timeout: 5s
 #    retries: 3
 #    start_period: 5s
+#websocket && data-text-lines contains "command"
+# docker inspect --format="{{json .State.Health}}" <<nazwa-kontenera>>
 
-services: 
+
+services:
+    messenger-server:
+        image: docker-messenger
+        restart: always
+        ports: 
+            - 8000:${PORT} #right: container side
+        depends_on: 
+            - db
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DB_NAME=${DB_NAME}
+            - FA_DOCKS_URL=${FA_DOCKS_URL}
+            #uvicorn env vars
+            - HOST=${HOST}
+            - PORT=${PORT}
+            - MAX_WORKERS=${MAX_WORKERS}
+
     db:
         image: mariadb
         restart: always
         environment:
-            MYSQL_ROOT_PASSWORD: 1236
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+
     
     adminer:
         image: adminer
         restart: always
         ports:
             - 8080:8080
-
-    messenger-server:
-        image: docker-messenger
-        restart: 'no'
-        ports: 
-            - 8000:8000 #right: container side
 #        environment:
 #            DB_USER: root
 #            DB_PASSWORD: 1236

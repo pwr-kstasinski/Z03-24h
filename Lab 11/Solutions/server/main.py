@@ -4,30 +4,21 @@ import uvicorn
 import json
 from fastapi import Depends, FastAPI, HTTPException, status, WebSocket, WebSocketDisconnect, Response
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from pylint.checkers.typecheck import _
+# from pylint.checkers.typecheck import _
 from sqlalchemy.orm import Session
 from sqlalchemy import inspect
+from sqlalchemy.util import asyncio
+from sqlalchemy_utils import database_exists
 
 import crud
 import database_models
 import schemas
 from database import SessionLocal, engine
-import os
 
-"""
-if not inspect(engine).has_table("users"):
-    database_models.User.create(engine)
-if not inspect(engine).has_table("messages"):
-    database_models.User.create(engine)
-if not inspect(engine).has_table("common_messages"):
-    database_models.User.create(engine)
-"""
-database_models.Base.metadata.clear()
+
 database_models.Base.metadata.create_all(bind=engine, checkfirst=True)
 
-docs_url = os.environ['FA_DOCKS_URL']
-
-app = FastAPI(docs_url=docs_url)
+app = FastAPI()
 
 
 class UserConnectionManager:
@@ -38,32 +29,40 @@ class UserConnectionManager:
         self.active_connections: dict[int, WebSocket] = {}  # userId, websocket
 
     async def connect(self, websocket: WebSocket, user_id: int):
+        print(str(user_id) + " connected\n")
         await websocket.accept()
         await self.broadcast_refresh_user_list()
         self.active_connections[user_id] = websocket
 
     async def disconnect(self, user_id: int):
+        print(str(user_id) + " disconnected\n")
         self.active_connections.pop(user_id, None)
         await self.broadcast_refresh_user_list()
 
     async def message_sent_to(self, sender_id: int, recipient_id: int):
+        print(str(sender_id) + " sends to " + str(recipient_id))
         socket = self.active_connections.get(recipient_id, None)
         if socket is not None:
+            print("Sending command to "+str(recipient_id)+"\n")
             jsonCommand = json.dumps({'command': self.command_newMessage, 'sender_id': sender_id})
             await socket.send_json(jsonCommand)
 
     async def broadcast_new_common_message(self):
+        print("Broadcast new common message\n")
         for key in self.active_connections:
             jsonCommand = json.dumps({'command': self.command_messageRead, 'recipient_id': -1})
             await self.active_connections[key].send_json(jsonCommand)
 
     async def message_read(self, sender_id: int, recipient_id: int):
+        print("Message from " + str(sender_id) + " read by " + str(recipient_id))
         socket = self.active_connections.get(sender_id, None)
         if socket is not None:
+            print("Sending command to "+str(sender_id)+"\n")
             jsonCommand = json.dumps({'command': self.command_messageRead, 'recipient_id': recipient_id})
             await socket.send_json(jsonCommand)
 
     async def broadcast_refresh_user_list(self):
+        print("Broadcast refresh user list\n")
         for key in self.active_connections:
             jsonCommand = json.dumps({'command': self.command_refreshUserList})
             await self.active_connections[key].send_json(jsonCommand)
@@ -185,15 +184,16 @@ async def post_message(
     if db_recipient is None:
         raise HTTPException(status_code=404, detail="Recipient not found")
 
+    result = crud.create_message(db=db, message=message, recipient_id=db_recipient.id, sender_id=current_user_id)
     await websocketsManager.message_sent_to(recipient_id=db_recipient.id, sender_id=current_user_id)
-    return crud.create_message(db=db, message=message, recipient_id=db_recipient.id, sender_id=current_user_id)
+    return result
 
 
 @app.post("/common_message", response_model=schemas.CommonMessage)
 async def post_common_message(message: schemas.MessageCreate,
-                        db: Session = Depends(get_db),
-                        current_user: schemas.User = Depends(get_user_from_token)
-                        ):
+                              db: Session = Depends(get_db),
+                              current_user: schemas.User = Depends(get_user_from_token)
+                              ):
     current_user_id = current_user.id
 
     crud.update_last_activity_of_user(db=db, user_id=current_user_id)
@@ -202,9 +202,9 @@ async def post_common_message(message: schemas.MessageCreate,
     current_user_nickname = current_user.nickname
 
     result = crud.create_common_message(db=db,
-                                      message=message,
-                                      sender_id=current_user_id,
-                                      sender_nickname=current_user_nickname)
+                                        message=message,
+                                        sender_id=current_user_id,
+                                        sender_nickname=current_user_nickname)
 
     await websocketsManager.broadcast_new_common_message()
 
@@ -250,9 +250,9 @@ def get_user_messages(
 
 @app.put("/mark_message_as_viewed", status_code=200)
 async def mark_message_as_viewed(message_id: int,
-                           sender_id: int,
-                           db: Session = Depends(get_db),
-                           current_user: schemas.User = Depends(get_user_from_token)):
+                                 sender_id: int,
+                                 db: Session = Depends(get_db),
+                                 current_user: schemas.User = Depends(get_user_from_token)):
     crud.mark_message_as_viewed(db=db, message_id=message_id)
     await websocketsManager.message_read(sender_id=sender_id, recipient_id=current_user.id)
     return
@@ -288,6 +288,7 @@ def get_conversation(otherUserNickName: str,
 
 isHealthy = True
 
+
 @app.get("/health_status/")
 def check(response: Response):
     if isHealthy:
@@ -296,11 +297,13 @@ def check(response: Response):
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     return
 
+
 @app.post("/health_status/")
 def change():
     global isHealthy
     isHealthy = False
     return "I'm sick now!"
+
 
 """
 if __name__ == "__main__":
