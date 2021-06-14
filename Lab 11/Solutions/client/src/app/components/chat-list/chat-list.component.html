@@ -1,0 +1,20 @@
+<ul class='chat-list'>
+  <!--  <li class='list-group-item' (click)='goToGeneral()' style='cursor: pointer'>General</li>-->
+  <li class='chat-list__item' *ngFor='let chat of chatList' (click)='openChat(chat)'
+      style='cursor: pointer'>
+    <div class='chat-list__avatar'><span>{{getFirstLetter(chat.name)}}</span>
+      <div class='chat-list__status' [class]='getStatusClass(chat)'></div>
+    </div>
+    <div class='d-flex justify-content-between'>
+      <div class='chat-list__name'>
+        {{chat.name}}
+      </div>
+      <div class='chat-list__date'
+           *ngIf='chat.message?.date'>{{chat.message?.date | date: getDateFormat(chat.message.date)}}</div>
+    </div>
+    <div class='d-flex justify-content-between'>
+      <div class='chat-list__message'>{{ this.getMessagePrefix(chat.message) }}{{ chat.message?.message }}</div>
+      <div *ngIf='chat.unread > 0' class='badge badge-pill badge-info'>{{chat.unread}}</div>
+    </div>
+  </li>
+</ul>
