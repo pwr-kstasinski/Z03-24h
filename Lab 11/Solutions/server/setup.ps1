@@ -7,9 +7,14 @@ docker image rm my-server
 
 docker build -t my-server . 
 
-docker-compose up db --detach 
+docker-compose up --detach
+# docker-compose up --detach  db 
 
-Start-Sleep -Seconds 5
+# Start-Sleep -Seconds 10
 
-docker-compose up adminer --detach 
-docker-compose up server --detach
+# docker-compose up --detach adminer
+# docker-compose up --detach server
+
+cd ../client
+
+npm start
