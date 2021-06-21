@@ -1,0 +1,7 @@
+Flask_SocketIO==5.1.0
+Flask_SQLAlchemy==2.5.1
+requests==2.25.1
+safrs==2.11.3
+eventlet==0.31.0
+Flask==1.1.2
+

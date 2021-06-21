@@ -1,0 +1,37 @@
+version: "3.1"
+
+services:
+  pwr-2-server:
+    image: pwr-2:v5
+    restart: "always"
+    ports:
+      - 5000:5000
+      - 5001:5000
+    environment: 
+        DB_HOST: db
+        DB_USER: root
+        DB_PASS: example
+        DB_DEFAULT: mysql
+
+  pwr-2-server-backup:
+    image: pwr-2:v3
+    restart: "always"
+    ports:
+      - 5002:5000
+    environment: 
+        DB_HOST: db
+        DB_USER: root
+        DB_PASS: example
+        DB_DEFAULT: mysql
+
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
