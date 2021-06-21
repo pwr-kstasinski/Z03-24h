@@ -1,0 +1,50 @@
+{% extends "prelogin_layout.html" %}
+
+
+{% block title %} Chat with {{user2}} {% endblock %}
+{% block content %}
+    <h1 style="text-align: center; margin-top: 0px; top: 0px; left: 0px; right: 0px; position:fixed; background-color: thistle;">
+        You ({{current_user.username}}) are chatting to : {{ user2 }} </h1>
+
+    <div id='chat'>
+        <div id='chat'>
+            <br />
+            {% for m in msg %}
+                {% if m[0] == current_user.username %}
+                    <p style="text-align: right; font-size: 20px; background-color: blanchedalmond; color:darkslategrey;"><b>{{ m[0] }}</b> : <i> {{ m[1] }} </i></p>
+                    <p style="text-align: right; font-size: 10px; margin-bottom: 50px;">{{ m[2] }} {{ m[3] }} </p>
+                {% endif %}
+                {% if m[0] != current_user.username %}
+                    <p style="font-size: 20px; background-color: lightcoral"><b> {{ m[0] }} </b> : <i>{{ m[1] }}</i></p>
+                    <p style="font-size: 10px;">{{ m[2] }} {{ m[3] }} </p>
+                {% endif %}
+            {% endfor %}
+            <br/>
+            <br/>
+        </div>
+    </div>
+
+
+    <div style="left:0px;right:0px;position: absolute; bottom: 0px; background-color: skyblue; position:fixed;">
+        <form action="" , method="POST">
+            <div style="text-align: center">
+                {{ msg_form.msg(class_='form-control',
+                placeholder="Type your message...",
+                autocomplete='off',
+                autofocus=true) }}
+            </div>
+            <div style="text-align: center">
+                {{ msg_form.submit_button }}
+            </div>
+    
+            {{ msg_form.csrf_token }}
+    
+        </form>
+    </div>
+
+
+{% endblock %}
+
+{% block foot %}
+
+{% endblock %}

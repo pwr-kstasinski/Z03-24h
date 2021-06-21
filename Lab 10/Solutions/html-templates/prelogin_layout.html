@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %} Messenger {% endblock %}</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+</head>
+
+<body style="background-color:whitesmoke">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            Category : {{ messages[0][0] }}
+            {{ messages[0][1] }}
+        {% endif %}
+    {% endwith  %}
+    <p id="messages"></p>
+    {% block content %}
+
+    {% endblock %}
+
+    
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var socket = io.connect('http://127.0.0.1:5000');
+
+            socket.on('connect', function () {
+                socket.send('User has connected!');
+            });
+
+            socket.on('message', function (msg) {
+                $("#messages").append('<p>' + msg + '</p>');
+                console.log('Received message');
+            });
+
+
+        });
+    </script>
+</body>
+
+<footer>
+    {% block foot %}
+
+    {% endblock %}
+</footer>
+
+</html>
