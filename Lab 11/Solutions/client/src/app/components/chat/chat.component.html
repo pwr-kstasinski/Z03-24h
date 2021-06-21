@@ -1,0 +1,23 @@
+<div class='card d-flex flex-column' style='height: 100vh'>
+  <div #messagesRef class='flex-grow-1' style='overflow-y: auto'>
+    <ul class='list-group'>
+      <li *ngFor='let message of messagesList' class='list-group-item d-flex flex-column'
+          [ngStyle]="{'background-color': message.sender_id == userId ? '#F7F7F8' : '#fff'}">
+        <div class='d-flex justify-content-between' [class]='userId == message.sender_id ? "flex-row" : "flex-row-reverse"'>
+          <span class='author'>{{ message.date | date: 'HH:mm dd.MM' }}<span *ngIf='message.unread' class='unread'></span></span>
+          <span class='author'>{{usersList && usersList[message.sender_id]}}</span>
+        </div>
+        <p style='max-width: 75%;' [class.align-self-end]='message.sender_id == userId' class='m-0'>{{ message.message }}</p>
+      </li>
+    </ul>
+  </div>
+  <div class='input-group bg-white'>
+    <input type='text' class='form-control' placeholder='Wiadomość' [formControl]='messageControl'>
+    <div class='input-group-append'>
+      <button class='btn btn-outline-primary' type='button' (click)='sendMessage()'>Wyślij</button>
+    </div>
+<!--    <div class='input-group-append'>-->
+<!--      <button class='btn btn-primary' type='button' (click)='getMessages()'>Odśwież</button>-->
+<!--    </div>-->
+  </div>
+</div>

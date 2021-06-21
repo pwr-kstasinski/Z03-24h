@@ -1,0 +1,12 @@
+<div class='layout'>
+  <div class='group'></div>
+  <div class='mess'>
+    <app-chat [chatId]='chatId$ | async' [chatType]='chatType$ | async'></app-chat>
+  </div>
+  <div class='logout'>
+    <button class='btn btn-success' (click)='logout()'>Wyloguj</button>
+  </div>
+  <div class='chat-list'>
+    <app-users-status></app-users-status>
+  </div>
+</div>
