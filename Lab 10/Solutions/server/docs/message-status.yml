@@ -1,0 +1,23 @@
+Update message status
+---
+tags: [message]
+parameters:
+  - in: body
+    name: messagesId
+    required: true
+    schema:
+      type: array
+      items:
+        type: number
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+responses:
+  200:
+    description: Ok
+  400:
+    description: Bad request
+
+
