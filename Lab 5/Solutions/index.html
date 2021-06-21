@@ -1,0 +1,56 @@
+<html lang="en">
+<head>
+  <title>Incredible Calculator</title>
+  <meta charset="utf-8">
+  <link href="index.css" rel="stylesheet">
+  <script src="https://unpkg.com/vue@next"></script>
+</head>
+<body>
+
+<div id="calculator">
+  <div id="calculator-header">
+    <input id="equation" v-model="equation">
+  </div>
+  <div id="calculator-buttons">
+    <btn val="1/x"></btn>
+    <btn val="log"></btn>
+    <btn val="C"></btn>
+    <btn val="🠔"></btn>
+    
+    <btn val="√"></btn>
+    <btn val="!"></btn>
+    <btn val="|x|"></btn>
+    <btn val="%"></btn>
+    
+    <btn val="("></btn>
+    <btn val=")"></btn>
+    <btn val="^"></btn>
+    <btn val="/"></btn>
+    
+    <btn class='highlight' val="7"></btn>
+    <btn class='highlight' val="8"></btn>
+    <btn class='highlight' val="9"></btn>
+    <btn val="*"></btn>
+    
+    <btn class='highlight' val="4"></btn>
+    <btn class='highlight' val="5"></btn>
+    <btn class='highlight' val="6"></btn>
+    <btn val="-"></btn>
+    
+    <btn class='highlight' val="1"></btn>
+    <btn class='highlight' val="2"></btn>
+    <btn class='highlight' val="3"></btn>
+    <btn val="+"></btn>
+    
+    <btn val="🌴"></btn>
+    <btn class='highlight' val="0"></btn>
+    <btn val="."></btn>
+    <btn val="="></btn>
+  </div>
+</div>
+
+<code id="tree">{{ tree }}</code>
+
+<script src="index.js"></script>
+</body>
+</html>
