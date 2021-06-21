@@ -1,0 +1,30 @@
+version: '3.1'
+
+services:
+    db:
+        image: mariadb
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_NAME}
+
+
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+          - 8080:8080
+
+    server:
+        image: chatroom-server
+        restart: always
+        ports: 
+            - 5000:5000 
+        depends_on: 
+            - db
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DB_NAME=${DB_NAME}
