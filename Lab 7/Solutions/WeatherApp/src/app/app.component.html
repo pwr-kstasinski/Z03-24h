@@ -1,0 +1,70 @@
+<div class='container'>
+  <div class='row justify-content-center mb-5'>
+    <p class='display-1 col-auto'>Pogodynka</p>
+  </div>
+  <div class='row justify-content-center'>
+    <form ngForm class='col-5 row' (ngSubmit)='search()'>
+      <div class='form-group col'>
+        <label for='cityInput'>Miasto</label>
+        <input [formControl]='cityControl' class='form-control' id='cityInput' placeholder='Wrocław' required>
+      </div>
+      <button type='submit' class='btn btn-primary col-auto align-self-end mb-3 ml-3'>Szukaj</button>
+    </form>
+  </div>
+
+  <div class='row mt-4 justify-content-center' *ngIf='currentViewState === ViewStateEnum.Daily'>
+    <div class='col-2 d-flex flex-column align-items-center' style='cursor: pointer'
+         (click)='openHourly(dailyData.data[0].valid_date)'>
+      <p class='h4'>Today</p>
+      <p class='h2 text-primary'>{{ dailyData.data[0].max_temp | number: '1.0-0' }}&deg;</p>
+      <p class='h5 text-primary'>{{ dailyData.data[0].min_temp | number: '1.0-0' }}&deg;</p>
+      <img src='assets/icons/{{ dailyData.data[0].weather.icon }}.png' width='100px' height='100px'>
+      <div>
+        <img src='assets/icons/droplet.png' height='20px'>
+        <span>{{ dailyData.data[0].pop }}%</span>
+      </div>
+    </div>
+    <div class='col-2 d-flex flex-column align-items-center  offset-1' style='cursor: pointer'
+         (click)='openHourly(dailyData.data[1].valid_date)'>
+      <p class='h4'>{{ getDate(dailyData.data[1].valid_date) | date: 'EEE dd.MM' }}</p>
+      <p class='h2 text-primary'>{{ dailyData.data[1].max_temp | number: '1.0-0' }}&deg;</p>
+      <p class='h5 text-primary'>{{ dailyData.data[1].min_temp | number: '1.0-0' }}&deg;</p>
+      <img src='assets/icons/{{ dailyData.data[1].weather.icon }}.png' width='100px' height='100px'>
+      <div>
+        <img src='assets/icons/droplet.png' height='20px'>
+        <span>{{ dailyData.data[1].pop }}%</span>
+      </div>
+    </div>
+    <div class='col-2 d-flex flex-column align-items-center  offset-1' style='cursor: pointer'
+         (click)='openHourly(dailyData.data[2].valid_date)'>
+      <p class='h4'>{{ getDate(dailyData.data[2].valid_date) | date: 'EEE dd.MM' }}</p>
+      <p class='h2 text-primary'>{{ dailyData.data[2].max_temp | number: '1.0-0' }}&deg;</p>
+      <p class='h5 text-primary'>{{ dailyData.data[2].min_temp | number: '1.0-0' }}&deg;</p>
+      <img src='assets/icons/{{ dailyData.data[2].weather.icon }}.png' width='100px' height='100px'>
+      <div>
+        <img src='assets/icons/droplet.png' height='20px'>
+        <span>{{ dailyData.data[2].pop }}%</span>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf='currentViewState === ViewStateEnum.Hourly'>
+    <div class='row justify-content-center'>
+      <div class='hourly-container col-auto'>
+        <div *ngFor='let hour of getHourlyTempByDate(); even as even' class='hourly-bar'
+             [style]='getBarStyles(hour.temp)'>
+          <span>{{ hour.temp | number: '1.0-0'}}&deg;</span>
+          <span *ngIf='even' class='hour'>{{ hour.timestamp_local | slice : 11:13 }}</span>
+        </div>
+      </div>
+    </div>
+    <div class='row mt-5 justify-content-center'>
+      <button class='btn btn-success col-auto' (click)='backButton()'>Powrót</button>
+    </div>
+  </ng-container>
+
+</div>
+
+<div class='alert-wrapper' *ngIf='alertMessage$ | async'>
+  <ngb-alert #alert type='danger'>{{ alertMessage$ | async }}
+  </ngb-alert>
+</div>

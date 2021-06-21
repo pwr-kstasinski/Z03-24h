@@ -1,0 +1,38 @@
+.hourly-container {
+  display: flex;
+  align-items: flex-end;
+  height: 100px;
+
+  .hourly-bar {
+    width: 30px;
+    margin: 0 2px;
+    border: 1px solid black;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    background: linear-gradient(90deg, rgb(13,0,240) 0%, rgb(10,246,235) 25%, rgb(255, 251, 2) 26%, rgb(196,0,0) 75%);
+    background-size: 10000px 10000px;
+
+    span {
+      font-weight: bold;
+      font-size: 0.8em;
+      color: white;
+      text-shadow: 0 0 3px black;
+    }
+
+    .hour {
+      position: absolute;
+      bottom: -25px;
+    }
+  }
+}
+
+.alert-wrapper {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+
+}
