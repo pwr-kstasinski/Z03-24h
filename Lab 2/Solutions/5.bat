@@ -1,0 +1,1 @@
+ffmpeg -i tst.mp4 -ss 00:00:01.000 -vframes 1 output.png
