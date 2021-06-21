@@ -1,0 +1,18 @@
+.temp-bar{
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    min-width: fit-content;
+    min-height: fit-content;
+    vertical-align: bottom;
+    background-color: hsl(0, 100%, 50%);
+}
+
+.temp-bar__label{
+    font-size: 20px;
+    color: white;
+    margin: 3px;
+    min-width: fit-content;
+    min-height: fit-content;
+    user-select: none;
+}
