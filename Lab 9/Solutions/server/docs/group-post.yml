@@ -1,0 +1,21 @@
+Create group
+---
+tags: [group]
+parameters:
+  - in: body
+    name: group
+    required: true
+    schema:
+      $ref: '#/definitions/Group'
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+responses:
+  200:
+    description: Ok
+  400:
+    description: Bad request
+
+

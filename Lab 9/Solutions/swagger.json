@@ -1,0 +1,344 @@
+{
+  "definitions": {
+    "Auth": {
+      "properties": {
+        "login": {
+          "description": "user login",
+          "type": "string"
+        },
+        "password": {
+          "description": "user password",
+          "type": "string"
+        }
+      },
+      "required": [
+        "login",
+        "password"
+      ]
+    },
+    "Group": {
+      "properties": {
+        "id": {
+          "description": "group id",
+          "type": "number"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "group name",
+          "type": "string"
+        },
+        "ownerId": {
+          "type": "string"
+        }
+      }
+    },
+    "Message": {
+      "properties": {
+        "group": {
+          "description": "is group message",
+          "type": "boolean"
+        },
+        "message": {
+          "description": "message from sender to receiver",
+          "type": "string"
+        },
+        "receiverId": {
+          "description": "message receiver id or group id",
+          "type": "number"
+        },
+        "senderId": {
+          "description": "message sender id",
+          "type": "number"
+        }
+      }
+    },
+    "Token": {
+      "properties": {
+        "token": {
+          "description": "jwt token",
+          "type": "string"
+        }
+      }
+    },
+    "User": {
+      "properties": {
+        "groups": {
+          "items": {
+            "$ref": "#/definitions/Group"
+          },
+          "type": "array"
+        },
+        "id": {
+          "description": "user id",
+          "type": "number"
+        },
+        "login": {
+          "description": "user login",
+          "type": "string"
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "Messenger API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/groups": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of groups",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Group"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "Get groups",
+        "tags": [
+          "group"
+        ]
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "group",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Group"
+            }
+          },
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "summary": "Create group",
+        "tags": [
+          "group"
+        ]
+      }
+    },
+    "/login": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "auth",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Auth"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "schema": {
+              "$ref": "#/definitions/Token"
+            }
+          },
+          "401": {
+            "description": "Invalid user or password"
+          }
+        },
+        "summary": "Login user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/message": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "message",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        },
+        "summary": "Send message",
+        "tags": [
+          "message"
+        ]
+      }
+    },
+    "/message-list": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "message",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Message"
+            }
+          },
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of messages",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/Message"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "Get messages",
+        "tags": [
+          "message"
+        ]
+      }
+    },
+    "/online": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "schema": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "Get online users login",
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "auth",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Auth"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Register successful"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "Login exists"
+          }
+        },
+        "summary": "Register user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "description": "jwt",
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/User"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "summary": "Get users",
+        "tags": [
+          "user"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0"
+}
