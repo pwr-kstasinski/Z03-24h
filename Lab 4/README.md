@@ -5,7 +5,7 @@ Python - [dokumentacja](https://docs.python.org/3/tutorial/index.html)
 Napisz program, który pozwoli użytkownikowi na obliczenie zdefiniowanego przez niego równania.
 
 Wymagania:
-1. ***(5 ptk.)*** Program musi pytać użytkowania o zdefiniowanie równania w formie jednego ciągu znaków:
+1. ***(4 ptk.)*** Program musi pytać użytkowania o zdefiniowanie równania w formie jednego ciągu znaków:
 1 + 2 * 3
 Dla którego następni obliczy wynik
 1 + 2 * 3 = 7
