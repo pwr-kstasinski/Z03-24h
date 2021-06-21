@@ -1,0 +1,16 @@
+.display{
+    background-color: gray;
+    padding: 10px;
+    font-size: 15px;
+    font-family: monospace;
+    text-align: right;
+}
+.display__small{
+    height: 1.5em;
+}
+.display__main{
+    height: 1em;
+    font-size: 3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
