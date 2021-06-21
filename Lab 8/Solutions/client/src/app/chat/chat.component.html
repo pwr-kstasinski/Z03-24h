@@ -1,0 +1,24 @@
+<div class='d-flex justify-content-end mr-3 mt-3'>
+  <button class='btn btn-success' (click)='logout()'>Wyloguj</button>
+</div>
+<div class='w-50 mx-auto card d-flex flex-column' style='height: 500px;'>
+  <div #messagesRef class='flex-grow-1' style='overflow-y: scroll'>
+    <ul class='list-group'>
+      <li *ngFor='let message of messagesList' class='list-group-item d-flex flex-column'
+          [class.align-items-end]='message.sender == user'
+      [ngStyle]="{'background-color': message.sender == user ? '#F7F7F8' : '#fff'}">
+        <span class='author'>{{message.sender}}</span>
+        <p style='max-width: 75%;' class='m-0'>{{ message.message }}</p>
+      </li>
+    </ul>
+  </div>
+  <div class='input-group bg-white'>
+    <input type='text' class='form-control' placeholder='Wiadomość' [formControl]='messageControl'>
+    <div class='input-group-append'>
+      <button class='btn btn-outline-primary' type='button' (click)='sendMessage()'>Wyślij</button>
+    </div>
+    <div class='input-group-append'>
+      <button class='btn btn-primary' type='button' (click)='getMessages()'>Odśwież</button>
+    </div>
+  </div>
+</div>

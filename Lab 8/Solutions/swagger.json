@@ -1,0 +1,147 @@
+{
+  "definitions": {
+    "AuthDTO": {
+      "properties": {
+        "login": {
+          "description": "user login", 
+          "type": "string"
+        }, 
+        "password": {
+          "description": "user password", 
+          "type": "string"
+        }
+      }, 
+      "required": [
+        "login", 
+        "password"
+      ]
+    }, 
+    "MessageDTO": {
+      "properties": {
+        "message": {
+          "description": "message from sender to receiver", 
+          "type": "string"
+        }, 
+        "receiver": {
+          "description": "message receiver login", 
+          "type": "string"
+        }, 
+        "sender": {
+          "description": "message sender login", 
+          "type": "string"
+        }
+      }, 
+      "required": [
+        "sender", 
+        "receiver", 
+        "message"
+      ]
+    }, 
+    "Token": {
+      "properties": {
+        "token": {
+          "description": "jwt token", 
+          "type": "string"
+        }
+      }
+    }
+  }, 
+  "info": {
+    "title": "Messenger API", 
+    "version": "1.0"
+  }, 
+  "paths": {
+    "/login": {
+      "post": {
+        "description": "", 
+        "parameters": [
+          {
+            "in": "body", 
+            "name": "auth", 
+            "required": true, 
+            "schema": {
+              "$ref": "#/definitions/AuthDTO"
+            }
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "Login successful", 
+            "schema": {
+              "$ref": "#/definitions/Token"
+            }
+          }, 
+          "401": {
+            "description": "Invalid user or password"
+          }
+        }, 
+        "summary": "Login user", 
+        "tags": [
+          "auth"
+        ]
+      }
+    }, 
+    "/message": {
+      "get": {
+        "description": "", 
+        "parameters": [
+          {
+            "description": "jwt", 
+            "in": "query", 
+            "name": "token", 
+            "required": true, 
+            "type": "string"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "List of messages", 
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/MessageDTO"
+              }, 
+              "type": "array"
+            }
+          }
+        }, 
+        "summary": "Get messages", 
+        "tags": [
+          "message"
+        ]
+      }, 
+      "post": {
+        "description": "", 
+        "parameters": [
+          {
+            "in": "body", 
+            "name": "message", 
+            "required": true, 
+            "schema": {
+              "$ref": "#/definitions/MessageDTO"
+            }
+          }, 
+          {
+            "description": "jwt", 
+            "in": "query", 
+            "name": "token", 
+            "required": true, 
+            "type": "string"
+          }
+        ], 
+        "responses": {
+          "200": {
+            "description": "Ok"
+          }, 
+          "400": {
+            "description": "Bad request"
+          }
+        }, 
+        "summary": "Send message", 
+        "tags": [
+          "message"
+        ]
+      }
+    }
+  }, 
+  "swagger": "2.0"
+}

@@ -1,0 +1,32 @@
+Send message
+---
+tags: [message]
+parameters:
+  - in: body
+    name: message
+    required: true
+    schema:
+      id: MessageDTO
+      required: [sender, receiver, message]
+      properties:
+        sender:
+          type: string
+          description: message sender login
+        receiver:
+          type: string
+          description: message receiver login
+        message:
+          type: string
+          description: message from sender to receiver
+  - in: query
+    name: token
+    description: jwt
+    required: true
+    type: string
+responses:
+  200:
+    description: Ok
+  400:
+    description: Bad request
+
+
